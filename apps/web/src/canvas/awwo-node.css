@@ -1,0 +1,285 @@
+/* A working conversation card. Kept separate from canvas positioning and wiring. */
+.canvas-root .canvas-tile.awwo-node {
+  --awwo-card: #fffefa;
+  --awwo-ink: #25332f;
+  --awwo-muted: #67756f;
+  --awwo-line: #dce4de;
+  --awwo-soft: #f4f6f1;
+  --awwo-teal: #177969;
+  --awwo-tint: #edf6f1;
+  --awwo-error: #a8382d;
+  background: var(--awwo-card);
+  color: var(--awwo-ink);
+  border: 1px solid var(--awwo-line);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px #24362b0b, 0 1px 3px #24362b06;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow: visible;
+  animation: none;
+}
+.canvas-root .canvas-tile.awwo-node::before { display: none; }
+.canvas-root .canvas-tile.awwo-node:hover { box-shadow: 0 8px 24px #24362b12; }
+.canvas-root .canvas-tile.awwo-node.canvas-tile--selected,
+.canvas-root .canvas-tile.awwo-node.canvas-tile--focus { border-color: var(--awwo-teal); box-shadow: 0 0 0 2px #17796918, 0 8px 24px #24362b12; }
+.canvas-root .canvas-tile.awwo-node.is-failed { border-color: var(--awwo-error); }
+.canvas-root .canvas-tile.awwo-node.is-blocked { border-color: #b88432; }
+.canvas-root .canvas-tile.awwo-node.is-running { border-color: var(--awwo-teal); }
+.canvas-root .awwo-node .canvas-tile-head { gap: 8px; min-height: 52px; padding: 12px 16px 8px; flex-shrink: 0; }
+.canvas-root .awwo-node .canvas-tile-glyph { width: 30px; height: 30px; border-radius: 8px; background: var(--awwo-tint); color: var(--awwo-teal); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.canvas-root .awwo-node .canvas-tile-title { font-size: 15px; font-weight: 650; letter-spacing: -.015em; line-height: 1.35; }
+.canvas-root .awwo-node .canvas-tile-dot { width: 6px; height: 6px; flex-shrink: 0; }
+.canvas-root .awwo-node .canvas-tile-dot--idle { background: #98a79f; }
+.canvas-root .awwo-node .canvas-tile-bind,
+.canvas-root .awwo-node .canvas-tile-badge { font-size: 11px; line-height: 1.4; padding: 3px 6px; border-radius: 5px; flex-shrink: 1; min-width: 0; }
+.canvas-root .awwo-node .canvas-tile-bind--unbound { background: var(--awwo-soft); color: var(--awwo-muted); border-color: var(--awwo-line); }
+.canvas-root .awwo-node .canvas-tile-bind--bound { color: var(--awwo-teal); background: var(--awwo-tint); border-color: transparent; }
+.canvas-root .awwo-node .canvas-tile-body { display: flex; flex-direction: column; gap: 0; flex: 1; min-height: 0; overflow: hidden; border-radius: 0 0 16px 16px; }
+.canvas-root .awwo-node .canvas-tile-runtime { padding: 0 16px 8px; margin: 0; font-size: 12px; line-height: 1.5; color: var(--awwo-muted); display: block; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; flex-shrink: 0; }
+.canvas-root .awwo-node-responsibility { margin: 0 16px 8px; color: var(--awwo-muted); line-height: 1.5; font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-shrink: 0; }
+.canvas-root .awwo-node-tabs { display: flex; gap: 16px; padding: 0 16px; flex-shrink: 0; border-bottom: 1px solid var(--awwo-line); }
+.canvas-root .awwo-node-tabs button { display: inline-flex; gap: 6px; align-items: center; min-height: 36px; background: none; border: 0; border-bottom: 2px solid transparent; color: var(--awwo-muted); font: inherit; font-size: 13px; padding: 0 0 8px; cursor: pointer; border-radius: 0; }
+.canvas-root .awwo-node-tabs button[aria-selected="true"] { color: var(--awwo-teal); border-bottom-color: var(--awwo-teal); font-weight: 600; }
+.canvas-root .awwo-node-panel { min-height: 0; flex: 1; overflow: auto; padding: 12px 16px; overscroll-behavior: contain; }
+.canvas-root .awwo-node-panel--conversation { display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+.canvas-root .awwo-node-empty { flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 4px; padding: 16px; color: var(--awwo-muted); font-size: 13px; }
+.canvas-root .awwo-node-empty > svg { color: var(--awwo-teal); margin-bottom: 4px; flex-shrink: 0; }
+.canvas-root .awwo-node-empty strong { color: var(--awwo-ink); font-size: 14px; font-weight: 600; }
+.canvas-root .awwo-node .canvas-transcript { flex: 1; min-height: 0; padding: 0; overflow: hidden; }
+.canvas-root .awwo-node .canvas-transcript-scroll { padding: 12px 16px; gap: 8px; }
+.canvas-root .awwo-node .canvas-transcript-turn { font-size: 13px; line-height: 1.65; padding: 8px 12px; border-radius: 10px; max-width: 96%; }
+.canvas-root .awwo-node .canvas-transcript-turn--user { background: var(--awwo-tint); color: var(--awwo-ink); }
+.canvas-root .awwo-node .canvas-transcript-turn--agent { background: var(--awwo-card); border-color: var(--awwo-line); color: var(--awwo-ink); }
+.canvas-root .awwo-node .canvas-transcript-status,
+.canvas-root .awwo-node .canvas-transcript-notice { font-size: 12px; padding: 8px 16px; }
+.canvas-root .awwo-node .canvas-composer { padding: 8px 16px 12px; border: 0; gap: 6px; background: var(--awwo-card); flex-shrink: 0; }
+.canvas-root .awwo-node .canvas-composer-notice,
+.canvas-root .awwo-node .canvas-composer-disclaimer,
+.canvas-root .awwo-node .canvas-composer-blocked { color: var(--awwo-muted); font-size: 11px; line-height: 1.45; }
+.canvas-root .awwo-node .canvas-composer-row { position: relative; align-items: stretch; gap: 8px; }
+.canvas-root .awwo-node .canvas-composer-input { min-height: 56px; max-height: 120px; width: 100%; padding: 8px 12px; font-size: 13px; line-height: 1.55; color: var(--awwo-ink); background: var(--awwo-soft); border: 1px solid var(--awwo-line); border-radius: 10px; resize: vertical; }
+.canvas-root .awwo-node .canvas-composer-send { display: flex; align-items: center; justify-content: center; gap: 4px; align-self: flex-end; min-height: 36px; padding: 8px; font-size: 12px; background: var(--awwo-teal); color: white; border: 0; border-radius: 8px; }
+.canvas-root .awwo-node .canvas-composer-send svg { flex-shrink: 0; }
+.canvas-root .awwo-node .canvas-tile-actions { margin: 0; padding: 8px 16px; gap: 8px; min-height: 45px; flex-shrink: 0; border-top: 1px solid var(--awwo-line); background: var(--awwo-card); }
+.canvas-root .awwo-node .canvas-tile-action { display: inline-flex; align-items: center; gap: 4px; border: 0; background: transparent; color: var(--awwo-muted); font-size: 12px; padding: 4px 0; white-space: nowrap; }
+.canvas-root .awwo-node .canvas-tile-action:hover { color: var(--awwo-teal); }
+.canvas-root .awwo-node .awwo-node-run { margin-left: auto; color: var(--awwo-teal); font-weight: 600; }
+.canvas-root .awwo-node .canvas-tile-preview { padding: 0 16px 8px; font-size: 12px; color: var(--awwo-muted); }
+.canvas-root .awwo-node.canvas-tile--glance .canvas-tile-head { padding: 8px 12px; min-height: 36px; }
+.canvas-root .awwo-node.canvas-tile--glance .canvas-tile-glyph { width: 24px; height: 24px; }
+.canvas-root .awwo-node.canvas-tile--glance .canvas-tile-title { font-size: 13px; }
+.canvas-root .awwo-node .canvas-form-fields { padding: 8px 16px; overflow: auto; }
+.canvas-root .awwo-node .canvas-form-field-label,
+.canvas-root .awwo-node .canvas-form-field-value { font-size: 13px; }
+.canvas-root .awwo-node .canvas-tile-output { margin: 16px 0 0; padding: 12px; border: 1px solid var(--awwo-line); background: var(--awwo-soft); border-radius: 8px; }
+.canvas-root .awwo-node .canvas-tile-output-head { flex-wrap: wrap; gap: 4px; }
+.canvas-root .awwo-node .canvas-tile-output-label { font-size: 12px; color: var(--awwo-ink); }
+.canvas-root .awwo-node .canvas-tile-output-meta { font-size: 11px; color: var(--awwo-muted); }
+.canvas-root .awwo-node .canvas-tile-output-body { font-size: 13px; line-height: 1.6; max-height: 160px; color: var(--awwo-ink); white-space: pre-wrap; overflow: auto; overflow-wrap: anywhere; }
+.canvas-root .awwo-contract-fields { display: flex; flex-direction: column; gap: 12px; }
+.canvas-root .awwo-contract-empty { padding: 12px 0; color: var(--awwo-muted); font-size: 13px; }
+.canvas-root .awwo-contract-field { border: 1px solid var(--awwo-line); padding: 12px; border-radius: 10px; background: var(--awwo-card); }
+.canvas-root .awwo-field-header { display: flex; gap: 6px; align-items: center; }
+.canvas-root .awwo-field-header input,
+.canvas-root .awwo-field-header select,
+.canvas-root .awwo-field-value { color: var(--awwo-ink); background: var(--awwo-soft); border: 1px solid var(--awwo-line); border-radius: 6px; font: inherit; font-size: 13px; line-height: 1.5; padding: 6px 8px; min-width: 0; }
+.canvas-root .awwo-field-name { width: 0; flex: 1; font-weight: 600; }
+.canvas-root .awwo-field-header select { width: 86px; }
+.canvas-root .awwo-field-remove { flex-shrink: 0; display: inline-flex; background: none; border: 0; padding: 5px; color: var(--awwo-muted); border-radius: 4px; cursor: pointer; }
+.canvas-root .awwo-field-remove:hover { color: var(--awwo-error); }
+.canvas-root .awwo-field-required { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--awwo-muted); margin: 8px 0; }
+.canvas-root .awwo-field-required input { margin: 0; accent-color: var(--awwo-teal); }
+.canvas-root .awwo-field-value { display: block; width: 100%; box-sizing: border-box; resize: vertical; min-height: 38px; }
+.canvas-root .awwo-field-hint { font-size: 11px; color: var(--awwo-muted); margin: 6px 0 0; }
+.canvas-root .awwo-field-add,
+.canvas-root .awwo-output-publish button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font: inherit; font-size: 13px; padding: 8px 12px; border: 1px solid var(--awwo-line); border-radius: 8px; background: var(--awwo-card); color: var(--awwo-teal); cursor: pointer; min-height: 36px; }
+.canvas-root .awwo-field-add { align-self: flex-start; }
+.canvas-root .awwo-output-publish { padding-top: 12px; }
+.canvas-root .awwo-output-publish p { font-size: 12px; color: var(--awwo-muted); margin: 0 0 8px; }
+.canvas-root .awwo-output-publish button { background: var(--awwo-teal); color: #fff; border-color: transparent; }
+.canvas-root .awwo-contract-errors { margin: 0; padding: 8px 8px 8px 24px; color: var(--awwo-error); background: color-mix(in srgb, var(--awwo-error) 5%, var(--awwo-card)); border-radius: 6px; font-size: 12px; line-height: 1.6; }
+.canvas-root .awwo-markdown { border: 1px solid var(--awwo-line); border-radius: 8px; overflow: hidden; }
+.canvas-root .awwo-markdown-toolbar { display: flex; gap: 2px; align-items: center; padding: 4px; border-bottom: 1px solid var(--awwo-line); background: var(--awwo-soft); }
+.canvas-root .awwo-markdown-toolbar button { display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 4px 5px; background: none; color: var(--awwo-muted); border: 0; border-radius: 4px; font: inherit; font-size: 12px; cursor: pointer; }
+.canvas-root .awwo-markdown-toolbar button:hover { background: var(--awwo-tint); color: var(--awwo-teal); }
+.canvas-root .awwo-markdown-toolbar .awwo-markdown-preview-toggle { margin-left: auto; color: var(--awwo-teal); }
+.canvas-root .awwo-markdown .awwo-field-value { border: 0; border-radius: 0; background: var(--awwo-card); min-height: 96px; }
+.canvas-root .awwo-markdown-preview { padding: 8px 12px; min-height: 96px; color: var(--awwo-ink); overflow-wrap: anywhere; font-size: 13px; }
+.canvas-root .awwo-markdown-preview > :first-child { margin-top: 0; }
+.canvas-root .awwo-markdown-preview > :last-child { margin-bottom: 0; }
+.canvas-root .awwo-markdown-preview h1 { font-size: 20px; }
+.canvas-root .awwo-markdown-preview h2 { font-size: 17px; }
+.canvas-root .awwo-markdown-preview h3 { font-size: 15px; }
+.canvas-root .awwo-markdown-preview a { color: var(--awwo-teal); text-decoration: underline; }
+.canvas-root .awwo-markdown-preview img { max-width: 100%; height: auto; }
+.canvas-root .awwo-markdown-preview pre { white-space: pre-wrap; padding: 8px; background: var(--awwo-soft); border-radius: 6px; }
+.canvas-root .awwo-node button:disabled,
+.canvas-root .awwo-node input:disabled,
+.canvas-root .awwo-node textarea:disabled,
+.canvas-root .awwo-node select:disabled { opacity: .55; cursor: not-allowed; }
+.canvas-root .awwo-node button:focus-visible,
+.canvas-root .awwo-node input:focus-visible,
+.canvas-root .awwo-node textarea:focus-visible,
+.canvas-root .awwo-node select:focus-visible { outline: 2px solid var(--awwo-teal); outline-offset: 2px; }
+:root[data-theme='dark'] .canvas-root .canvas-tile.awwo-node {
+  --awwo-card: #222925; --awwo-ink: #e7eee9; --awwo-muted: #abb9b0; --awwo-line: #3d4a41;
+  --awwo-soft: #29332c; --awwo-teal: #73c8ae; --awwo-tint: #293d34; --awwo-error: #f0a499;
+}
+:root[data-theme='dark'] .canvas-root .awwo-node .canvas-composer-send,
+:root[data-theme='dark'] .canvas-root .awwo-output-publish button { color: #152c23; }
+@media (prefers-reduced-motion: reduce) { .canvas-root .awwo-node * { animation: none !important; transition: none !important; } }
+
+/* Each Agent is a compact workstation: sessions, conversation, optional deliverables. */
+.canvas-root .canvas-tile.awwo-node { border-radius: 12px; --awwo-card: #fff; --awwo-soft: #f7f8f7; }
+.canvas-root .awwo-node .canvas-tile-head { min-height: 43px; padding: 8px 12px; gap: 7px; border-bottom: 1px solid var(--awwo-line); }
+.canvas-root .awwo-node .canvas-tile-glyph { width: 24px; height: 24px; border-radius: 6px; }
+.canvas-root .awwo-node .canvas-tile-glyph svg { width: 14px; height: 14px; }
+.canvas-root .awwo-node .canvas-tile-title { font-size: 13px; }
+.canvas-root .awwo-node .canvas-tile-bind { flex: 0 0 auto; padding: 2px 4px; font-size: 10px; border: 0; white-space: nowrap; }
+.canvas-root .awwo-node .canvas-tile-body { border-radius: 0 0 12px 12px; }
+.canvas-root .awwo-node-tools { position: relative; display: flex; align-items: center; gap: 3px; margin-left: auto; flex-shrink: 0; }
+.canvas-root .awwo-node-tools > button, .canvas-root .awwo-session-heading button, .canvas-root .awwo-chat-heading button,
+.canvas-root .awwo-node-delivery-drawer > header button, .canvas-root .awwo-input-drawer > header button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 26px; padding: 5px;
+  background: transparent; color: var(--awwo-muted); border: 0; border-radius: 5px; font: inherit; font-size: 11px;
+}
+.canvas-root .awwo-node-tools button:hover, .canvas-root .awwo-chat-heading button:hover { background: var(--awwo-soft); color: var(--awwo-ink); }
+.canvas-root .awwo-node-menu { position: absolute; z-index: 12; right: 0; top: 32px; width: 130px; padding: 5px; background: var(--awwo-card); border: 1px solid var(--awwo-line); border-radius: 8px; box-shadow: 0 6px 20px #0002; }
+.canvas-root .awwo-node-menu button { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; border-radius: 4px; padding: 8px; background: transparent; color: var(--awwo-ink); font: inherit; font-size: 12px; text-align: left; }
+.canvas-root .awwo-node-workbench { display: flex; flex: 1; min-height: 0; min-width: 0; position: relative; }
+.canvas-root .awwo-session-sidebar { width: 116px; flex: 0 0 116px; display: flex; flex-direction: column; gap: 6px; padding: 8px 7px; background: var(--awwo-soft); border-right: 1px solid var(--awwo-line); min-height: 0; }
+.canvas-root .awwo-session-heading { display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--awwo-muted); padding-left: 5px; }
+.canvas-root .awwo-session-new, .canvas-root .awwo-session-input, .canvas-root .awwo-session-list button { display: flex; align-items: center; gap: 7px; border: 0; padding: 8px 7px; border-radius: 6px; background: transparent; color: var(--awwo-ink); font: inherit; font-size: 11px; width: 100%; text-align: left; }
+.canvas-root .awwo-session-new { font-weight: 550; }
+.canvas-root .awwo-session-list { min-height: 0; flex: 1; overflow: auto; overscroll-behavior: contain; }
+.canvas-root .awwo-session-list button { margin: 2px 0; }
+.canvas-root .awwo-session-list button span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.canvas-root .awwo-session-list button.is-active { background: var(--awwo-line); }
+.canvas-root .awwo-session-sidebar button:hover { background: var(--awwo-line); }
+.canvas-root .awwo-session-input { color: var(--awwo-muted); }
+.canvas-root .awwo-node-chat { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.canvas-root .awwo-chat-heading { min-height: 37px; padding: 5px 12px; display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--awwo-muted); flex-shrink: 0; }
+.canvas-root .awwo-chat-heading .awwo-input-toggle { margin-left: auto; }
+.canvas-root .awwo-node-empty { align-items: center; text-align: center; font-size: 12px; gap: 6px; padding: 20px 12px; }
+.canvas-root .awwo-node-empty strong { font-size: 17px; font-weight: 550; letter-spacing: -.3px; }
+.canvas-root .awwo-node .canvas-composer { padding: 8px 12px 12px; }
+.canvas-root .awwo-node .canvas-composer-row { display: block; }
+.canvas-root .awwo-node .canvas-composer-input { min-height: 80px; padding: 10px 12px 28px; border-radius: 12px; background: var(--awwo-soft); font-size: 12px; resize: none; }
+.canvas-root .awwo-node .canvas-composer-send { position: absolute; right: 7px; bottom: 7px; padding: 5px; min-height: 26px; width: 26px; height: 26px; border-radius: 50%; background: var(--awwo-ink); color: var(--awwo-card); }
+.canvas-root .awwo-node .canvas-composer-send span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.canvas-root .awwo-node .canvas-composer-blocked, .canvas-root .awwo-node .canvas-composer-notice, .canvas-root .awwo-node .canvas-composer-disclaimer { font-size: 10px; line-height: 1.4; }
+/* Width mirrors DELIVERY_DRAWER_WIDTH in nodePresentation.ts. */
+.canvas-root .awwo-node-delivery-drawer { width: 320px; flex: 0 0 320px; display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--awwo-line); background: var(--awwo-card); }
+.canvas-root .awwo-node-delivery-drawer > header { min-height: 37px; padding: 5px 10px; border-bottom: 1px solid var(--awwo-line); display: flex; align-items: center; justify-content: space-between; font-size: 11px; }
+.canvas-root .awwo-node-delivery-drawer > header > span { display: flex; align-items: center; gap: 6px; }
+:is(.canvas-root, .awwo-results) .awwo-deliverables { padding: 12px; flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; font-size: 12px; }
+:is(.canvas-root, .awwo-results) .awwo-deliverables-meta { color: var(--awwo-muted); font-size: 10px; margin-bottom: 10px; }
+:is(.canvas-root, .awwo-results) .awwo-deliverables-empty { color: var(--awwo-muted); text-align: center; padding: 45px 8px; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable { border: 1px solid var(--awwo-line); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-title { margin: 0; padding: 9px 12px; background: var(--awwo-soft); font-size: 12px; font-weight: 600; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-files { display: flex; gap: 4px; overflow-x: auto; padding: 2px 2px 8px; margin-bottom: 2px; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-files button { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; max-width: 180px; min-height: 32px; padding: 6px 9px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--awwo-muted); font: inherit; font-size: 11px; cursor: pointer; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-files button span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-files button svg { flex-shrink: 0; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-files button[aria-pressed="true"] { border-color: var(--awwo-line); background: var(--awwo-soft); color: var(--awwo-ink); }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-files button:hover { color: var(--awwo-ink); background: var(--awwo-soft); }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-files button:focus-visible { outline: 2px solid var(--awwo-teal); outline-offset: -2px; }
+/* A stored file deliverable: the body is a download action, not previewable text. */
+:is(.canvas-root, .awwo-results) .awwo-deliverable-file { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--awwo-accent, #286454); text-decoration: underline; text-underline-offset: 3px; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-body { padding: 10px 12px; overflow-wrap: anywhere; white-space: pre-wrap; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-body p { margin: 0 0 8px; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-body h1, :is(.canvas-root, .awwo-results) .awwo-deliverable-body h2 { font-size: 15px; margin: 0 0 10px; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-body img { max-width: 100%; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-body pre { white-space: pre-wrap; font-size: 11px; }
+:is(.canvas-root, .awwo-results) .awwo-deliverables-editor summary { cursor: pointer; color: var(--awwo-muted); font-size: 11px; padding: 8px 0; }
+:is(.canvas-root, .awwo-results) .awwo-deliverables-editor .awwo-contract-field { padding: 8px; }
+:is(.canvas-root, .awwo-results) .awwo-deliverables .awwo-field-header { flex-wrap: wrap; }
+:is(.canvas-root, .awwo-results) .awwo-deliverables .awwo-field-name { flex-basis: 100%; }
+.canvas-root .awwo-input-drawer { flex: 0 1 auto; max-height: 52%; padding: 10px 12px; border-block: 1px solid var(--awwo-line); background: var(--awwo-soft); }
+/* A copied case node (productionCopy.ts) with nothing said or run yet opens on what it was asked and
+   received: the inputs fill the column, and the empty conversation's hint waits until they close. */
+.canvas-root .awwo-node-workbench.is-case-intro .awwo-input-drawer { flex: 1 1 auto; max-height: none; }
+.canvas-root .awwo-node-workbench.is-case-intro .awwo-input-drawer + .awwo-node-panel--conversation { flex: 0 0 auto; }
+.canvas-root .awwo-node-workbench.is-case-intro .awwo-input-drawer + .awwo-node-panel--conversation > .awwo-node-empty { display: none; }
+.canvas-root .awwo-input-drawer > header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; font-size: 11px; }
+.canvas-root .awwo-node-delivery-drawer:has(.canvas-inspector) { position: absolute; inset: 0 0 0 auto; width: min(340px, 100%); z-index: 9; box-shadow: -4px 0 16px #0001; }
+.canvas-root .awwo-node .canvas-inspector { border: 0; background: var(--awwo-card); color: var(--awwo-ink); }
+.canvas-root .awwo-node .canvas-inspector-input,
+.canvas-root .awwo-node .canvas-inspector-persona { background: var(--awwo-soft); color: var(--awwo-ink); border-color: var(--awwo-line); }
+.canvas-root .awwo-node .canvas-inspector-input::placeholder,
+.canvas-root .awwo-node .canvas-inspector-persona::placeholder { color: var(--awwo-muted); }
+.canvas-root .awwo-node .canvas-inspector-input:focus,
+.canvas-root .awwo-node .canvas-inspector-persona:focus { border-color: var(--awwo-teal); }
+.canvas-root .awwo-node .canvas-inspector-head { padding: 10px 12px; }
+.canvas-root .awwo-node .canvas-inspector-title { font-size: 12px; }
+:root[data-theme='dark'] .canvas-root .canvas-tile.awwo-node { --awwo-card: #222925; --awwo-soft: #29332c; }
+
+.canvas-root .awwo-node.canvas-tile--selected { z-index: 2; }
+.canvas-root .awwo-node.canvas-tile--focus { z-index: 3; }
+:is(.canvas-root, .awwo-results) .awwo-deliverable-body.awwo-markdown-preview { white-space: normal; }
+
+/* The graph stays quiet until one Agent is opened. */
+.canvas-root .awwo-node.is-compact { border-radius: 10px; box-shadow: 0 2px 8px #24362b08; }
+.canvas-root .awwo-node.is-compact .canvas-tile-head { min-height: 48px; padding: 12px 14px 5px; border-bottom: 0; gap: 8px; }
+.canvas-root .awwo-node.is-compact .canvas-tile-glyph { width: 22px; height: 22px; }
+.canvas-root .awwo-node.is-compact .canvas-tile-title { font-weight: 600; }
+.canvas-root .awwo-node.is-compact .canvas-tile-bind { font-size: 10px; padding: 2px 5px; }
+.canvas-root .awwo-node.is-compact .canvas-tile-badge { max-width: 82px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
+.canvas-root .awwo-node.is-compact .canvas-tile-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.canvas-root .awwo-node.is-compact .node-team-count { flex: 0 0 auto; padding-right: 7px; border-right: 1px solid var(--awwo-border); color: var(--awwo-muted); font-size: 10px; white-space: nowrap; }
+.canvas-root .awwo-compact-open { display: flex; flex: 1; min-height: 0; width: 100%; align-items: center; justify-content: space-between; gap: 8px; padding: 3px 15px 15px; border: 0; border-radius: 0 0 10px 10px; background: transparent; color: var(--awwo-ink); text-align: left; font: inherit; }
+.canvas-root .awwo-compact-open:hover { background: var(--awwo-soft); }
+.canvas-root .awwo-compact-summary { display: block; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: inherit; line-height: 1.5; color: var(--awwo-muted); }
+.canvas-root .awwo-compact-chevron { flex: 0 0 auto; color: var(--awwo-muted); opacity: .55; }
+.canvas-root .awwo-compact-open:hover .awwo-compact-chevron, .canvas-root .awwo-compact-open:focus-visible .awwo-compact-chevron { opacity: 1; color: var(--awwo-teal); }
+.canvas-root .awwo-node.is-compact .canvas-port-field-label { opacity: 0; pointer-events: none; transition: opacity .12s; }
+.canvas-root .awwo-node.is-compact:hover .canvas-port-field-label, .canvas-root .awwo-node.is-compact:focus-within .canvas-port-field-label { opacity: 1; }
+.canvas-root .awwo-node.is-compact .canvas-port { width: 10px; height: 10px; }
+
+.canvas-root .awwo-node.is-compact { padding: 0; }
+.canvas-root .awwo-node.is-compact .canvas-tile-bind { white-space: nowrap; flex-shrink: 0; }
+.canvas-root .awwo-node.is-compact .awwo-compact-summary { min-height: 1.5em; }
+
+/* Contain every node's port layer so folded neighbours cannot cover the active workspace. */
+.canvas-root .awwo-node:not(.canvas-tile--selected):not(.canvas-tile--focus) { z-index: 0; }
+
+.canvas-root[data-narrow-focus='true'] .awwo-node.canvas-tile--focus .awwo-node-delivery-drawer { position: absolute; inset: 0; z-index: 8; width: 100%; border-left: 0; }
+
+/* Read-only and running nodes can open a delivery locally without resizing the saved
+ * document. Fit the drawer to the actual workstation, even on a wide desktop. */
+.canvas-root .awwo-node-workbench { container: awwo-workbench / inline-size; }
+@container awwo-workbench (max-width: 739px) {
+  .canvas-root .awwo-node-delivery-drawer { position: absolute; inset: 0; z-index: 8; width: 100%; border-left: 0; }
+}
+.canvas-root .awwo-chat-heading { flex-wrap: wrap; }
+.canvas-root .awwo-chat-heading > button { flex-shrink: 0; white-space: nowrap; }
+
+@media (max-width: 600px) {
+  .canvas-root .awwo-node.canvas-tile--focus .canvas-tile-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .canvas-root .awwo-node.canvas-tile--focus .canvas-tile-bind--bound { display: none; }
+  .canvas-root .awwo-node.canvas-tile--focus .awwo-node-tools > button > span { display: none; }
+}
+
+/* Template-specific content is disclosed inside the active node only. */
+.canvas-root .awwo-node[data-template] .canvas-tile-glyph { color: var(--template-accent, var(--awwo-teal)); background: var(--template-soft, var(--awwo-tint)); }
+.canvas-root .awwo-chat-heading .awwo-template-toggle { margin-left: auto; font-size: 10px; }
+.canvas-root .awwo-chat-heading .awwo-template-toggle[aria-expanded='true'] { color: var(--template-accent); background: var(--template-soft); }
+.canvas-root .awwo-node-template-guide { flex: 1; min-height: 0; overflow: auto; padding: 10px 16px 18px; overscroll-behavior: contain; }
+.canvas-root .awwo-node-template-guide > header { display: flex; align-items: flex-start; justify-content: space-between; margin: 0 0 18px; }
+.canvas-root .awwo-node-template-guide > header strong { font-size: 14px; }
+.canvas-root .awwo-node-template-guide > header span { display: block; color: var(--awwo-muted); font-size: 10px; margin-top: 4px; }
+.canvas-root .awwo-node-template-guide > header button { display: inline-flex; background: transparent; border: 0; padding: 5px; color: var(--awwo-muted); }
+.canvas-root .awwo-node-template-guide .awwo-template-contract { gap: 12px; }
+.canvas-root .awwo-node .awwo-node-empty { overflow: auto; flex-shrink: 1; justify-content: safe center; padding: 18px 20px; }
+.canvas-root .awwo-node-empty > span:not(.awwo-node-empty-glyph) { max-width: 350px; font-size: 11px; line-height: 1.8; }
+.canvas-root .awwo-node-empty .awwo-node-empty-glyph { display: inline-flex; align-items: center; justify-content: center; padding: 11px; border-radius: 12px; margin-bottom: 7px; color: var(--template-accent); background: var(--template-soft); }
+.canvas-root .awwo-starter-prompts { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 12px; }
+.canvas-root .awwo-starter-prompts button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 7px 9px; border: 1px solid var(--awwo-line); border-radius: 6px; background: var(--awwo-card); color: var(--awwo-muted); font: inherit; font-size: 10px; }
+.canvas-root .awwo-starter-prompts button:hover { color: var(--template-accent); border-color: var(--template-accent); }
+.canvas-root .awwo-field-help { font-size: 11px; line-height: 1.65; color: var(--awwo-muted); margin: 7px 0; }
+:is(.canvas-root, .awwo-results) .awwo-deliverables-title { font-size: 12px; font-weight: 600; margin: 0 0 10px; color: var(--template-accent, var(--awwo-ink)); }
+
+:is(.canvas-root, .awwo-results) .awwo-deliverables:has(.awwo-expected-deliverables) .awwo-deliverables-empty { padding: 12px 0 8px; text-align: left; font-size: 11px; }
+:is(.canvas-root, .awwo-results) .awwo-expected-deliverables { padding: 0; margin: 0 0 16px; list-style: none; }
+:is(.canvas-root, .awwo-results) .awwo-expected-deliverables li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--awwo-line); font-size: 11px; }
+:is(.canvas-root, .awwo-results) .awwo-expected-deliverables li span:last-child { flex-shrink: 0; font-size: 9px; color: var(--awwo-muted); background: var(--awwo-soft); padding: 2px 5px; border-radius: 4px; }

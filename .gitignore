@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+*.log
+*.tsbuildinfo
+.vite/
+.env
+.env.*
+!.env.example
+runtimes.local.json
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+Thumbs.db

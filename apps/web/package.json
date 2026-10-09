@@ -1,0 +1,29 @@
+{
+  "name": "@awwo/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AwwO Canvas web surface: the infinite canvas, node tiles, inspector, run controls and the canvas assistant.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@awwo/core": "0.1.0",
+    "lucide-react": "0.468.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "react-markdown": "10.1.0",
+    "remark-gfm": "4.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.3",
+    "vite": "8.2.2"
+  }
+}

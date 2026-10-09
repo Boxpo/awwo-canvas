@@ -1,0 +1,15 @@
+.awwo-graph-settings { display:flex; align-items:center; gap:6px; position:relative; font-size:12px; }
+.awwo-graph-settings select, .awwo-graph-settings button { font:inherit; color:var(--awwo-ink, #243a31); border:1px solid var(--awwo-border, #dce5df); border-radius:7px; background:var(--awwo-surface, #fff); padding:7px 9px; }
+.awwo-graph-settings button { cursor:pointer; }
+.awwo-graph-settings :disabled { opacity:.5; cursor:default; }
+.awwo-graph-settings :focus-visible { outline:2px solid #087968; outline-offset:2px; }
+.awwo-graph-panel { position:absolute; z-index:80; right:0; top:calc(100% + 12px); width:min(340px,calc(100vw - 32px)); max-height:calc(100dvh - 115px); overflow:auto; box-sizing:border-box; padding:18px; border:1px solid var(--awwo-border, #dce5df); border-radius:14px; background:var(--awwo-surface, #fff); box-shadow:0 12px 40px #17392b20; color:var(--awwo-ink, #243a31); display:grid; gap:12px; }
+.awwo-graph-panel header { display:flex; align-items:center; justify-content:space-between; }
+.awwo-graph-panel header button { border:0; font-size:20px; padding:0 6px; }
+.awwo-graph-panel p { line-height:1.6; margin:0; color:var(--awwo-muted, #52665b); }
+.awwo-graph-panel label { display:grid; gap:6px; }
+.awwo-graph-panel select { width:100%; min-width:0; }
+.awwo-graph-panel small { line-height:1.5; color:var(--awwo-muted, #607267); }
+.awwo-graph-panel .awwo-graph-partner { background:var(--awwo-accent-soft, #eff6f2); text-align:left; font-weight:600; }
+.awwo-run-slot { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+@media(max-width:700px) { .awwo-graph-settings { gap:3px; } .awwo-graph-settings > button { font-size:11px; } .awwo-graph-panel { position:fixed; right:16px; top:85px; } }

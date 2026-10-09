@@ -1,0 +1,1271 @@
+/* Session-canvas stylesheet — ClawHunt brand LIGHT, always.
+ *
+ * Provenance: the surviving tile / port / wire / overlay rules from the previous canvas
+ * (since-deleted apps/web/src/studio/studio.css), rescoped from `.studio-canvas` to `.canvas-root` and stripped
+ * of everything that belonged to the retired fleet + creative node families (family badges and
+ * accent strips, fleet agent chips, creative delete chips, minimap, mission/timeline panels,
+ * anchored chat bubbles, the company draft input).
+ *
+ * The palette is the owner-approved ClawHunt brand light set, carried over VALUE-FOR-VALUE:
+ *   paper #f5fbfc · ink #0e1c2c · line #cfe6e8 · blue #3f7ff5 · teal #10b6a6.
+ *
+ * There is deliberately NO `[data-theme='dark']` block and no `prefers-color-scheme` override:
+ * the canvas is always the light brand design (the owner rejected the dark look). Every rule is
+ * scoped under `.canvas-root` so the canvas can never leak into the rest of the app, and nothing
+ * writes to the global `:root`.
+ *
+ * Deliberately NOT used inside the transformed world: backdrop-filter — blur layers rasterize
+ * blurry at non-1:1 scale. World tiles are solid var(--card); blur lives only on fixed chrome.
+ */
+
+.canvas-root {
+  /* ---- brand tokens (light only) ---- */
+  --page: #f5fbfc;
+  --grid: #cfe6e8;
+  --panel: rgba(255, 255, 255, 0.92);
+  --card: #fff;
+  --text: #0e1c2c;
+  --muted: #4f6477;
+  --faint: #7c8c9c;
+  --line: #cfe6e8;
+  --soft: #f5fbfc;
+  --shadow: rgba(25, 73, 89, 0.09);
+  --strong: #0e1c2c;
+  --strong-text: #fff;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --edge: rgba(79, 100, 119, 0.55);
+  --blue: #3f7ff5;
+  --teal: #10b6a6;
+  /* Agent-kind accents. Form keeps the neutral ink voice; image gets its own cool blue so the
+     three agent kinds stay tellable apart at a glance. */
+  --kind-form: #4f6477;
+  --kind-llm: #3f7ff5;
+  --kind-coding: #10b6a6;
+  --kind-image: #2496df;
+  /* Honest state colors (never decorative — these mark real outcomes). */
+  --ok: #16a34a;
+  --warn: #b45309;
+  --err: #dc2626;
+  /* Running is its own state, not a shade of "blocked" — it had been a raw #f59e0b in three
+     places while the chip beside it used --warn, so one semantic wore two colours. */
+  --amber: #f59e0b;
+
+  /* ---- type + rhythm ----
+     There is no webfont in this app (verified: no @font-face, no font package, no /fonts dir), so
+     every weight the stylesheet asked for was resolved by whatever the OS happened to have. The
+     stack below names the VARIABLE system faces first — Segoe UI Variable on Windows 11, SF Pro
+     via system-ui on macOS — because those can actually render a ladder; 'Inter' stays ahead of
+     them so the design lands as authored the day a webfont is shipped.
+
+     The ladder itself is three steps, not six. 650 / 750 / 850 were indistinguishable from their
+     neighbours on any static face and merely noise on a variable one: a hierarchy nobody can see
+     is not a hierarchy. The RELATIVE order is what was preserved — what used to shout still
+     shouts, what used to be secondary still is. Sizes are whole pixels: half-pixel type inside
+     the world transform lands on fractional device pixels and renders soft at every zoom except
+     exactly 1.0. */
+  --fs-micro: 10px;
+  --fs-meta: 11px;
+  --fs-body: 12px;
+  --fs-title: 13px;
+  --fs-lg: 15px;
+  --fw-body: 400;
+  --fw-med: 600;
+  --fw-bold: 700;
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  /* Page colour only. The dot grid used to live HERE, on the non-transformed layer, so it never
+     panned and never scaled — zoom read as "the content resized" rather than "I moved closer".
+     It now lives on its own layers inside the viewport (see CanvasViewport's gridStyle). */
+  background-color: var(--page);
+  color: var(--text);
+  font-family: 'Inter', 'Segoe UI Variable Display', 'Segoe UI Variable Text', system-ui,
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Slightly tighter tracking reads as intent rather than default at these sizes. */
+  letter-spacing: -0.006em;
+}
+
+/* ---- viewport + world ------------------------------------------------------------------- */
+
+.canvas-root .canvas-viewport {
+  position: absolute;
+  inset: 0;
+  /* Required: without it the browser consumes pan/pinch gestures before the pointer handlers. */
+  touch-action: none;
+  cursor: grab;
+}
+.canvas-root .canvas-viewport:active {
+  cursor: grabbing;
+}
+/* Grid layers: below the world, above the page, never interactive. Their size/position/opacity
+   are driven from the live camera in CanvasViewport. */
+.canvas-root .canvas-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.canvas-root .canvas-grid--coarse { opacity: 0.55; }
+
+.canvas-root .canvas-world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  will-change: transform;
+}
+
+/* ---- wires ------------------------------------------------------------------------------ */
+
+.canvas-root .canvas-wires {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.canvas-root .canvas-wire {
+  fill: none;
+  stroke: var(--edge);
+  stroke-width: 1.9;
+  transition: stroke-opacity 0.14s ease;
+}
+.canvas-root .canvas-wire--image {
+  stroke: color-mix(in srgb, var(--kind-image) 70%, transparent);
+}
+/* Wide invisible hit path: double-click a wire to disconnect it. */
+.canvas-root .canvas-wire-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+/* Live preview while dragging from a port. */
+.canvas-root .canvas-wire-preview {
+  fill: none;
+  stroke: var(--strong);
+  stroke-dasharray: 6 5;
+  stroke-width: 1.9;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* ---- tiles ------------------------------------------------------------------------------ */
+
+.canvas-root .canvas-tile {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  box-shadow: 0 12px 34px var(--shadow);
+  cursor: move;
+  overflow: hidden;
+  transition: border-color 0.14s ease, box-shadow 0.14s ease;
+}
+.canvas-root .canvas-tile:hover {
+  border-color: var(--strong);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+.canvas-root .canvas-tile:active {
+  cursor: grabbing;
+}
+/* Agent-kind accent strip on the left edge — the one cue that keeps kinds legible at card LOD. */
+.canvas-root .canvas-tile::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 3px;
+}
+.canvas-root .canvas-tile--form::before { background: var(--kind-form); }
+.canvas-root .canvas-tile--llm::before { background: var(--kind-llm); }
+.canvas-root .canvas-tile--coding::before { background: var(--kind-coding); }
+.canvas-root .canvas-tile--image::before { background: var(--kind-image); }
+
+/* RUN STATE ON THE TILE ITSELF.
+   The state used to live only on a 7px dot and a 9px badge. At the glance tier — under 90
+   effective px, i.e. roughly scale 0.35 on a 260px tile — that dot renders about 2px, so the
+   overview, which is the entire reason to use a canvas instead of a chat, could not answer
+   "which node failed". A 2-3px ring on a 340px box stays legible down to about scale 0.15. */
+.canvas-root .canvas-tile.is-running {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--amber) 32%, transparent), 0 12px 34px var(--shadow);
+  animation: canvas-tile-breathe 1.9s var(--ease) infinite;
+}
+.canvas-root .canvas-tile.is-done {
+  border-color: color-mix(in srgb, var(--ok) 55%, var(--line));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ok) 18%, transparent), 0 12px 34px var(--shadow);
+}
+.canvas-root .canvas-tile.is-failed {
+  border-color: var(--err);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--err) 30%, transparent), 0 12px 34px var(--shadow);
+}
+.canvas-root .canvas-tile.is-blocked {
+  border-color: var(--warn);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--warn) 26%, transparent), 0 12px 34px var(--shadow);
+}
+@keyframes canvas-tile-breathe {
+  0%, 100% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--amber) 32%, transparent), 0 12px 34px var(--shadow); }
+  50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--amber) 16%, transparent), 0 12px 34px var(--shadow); }
+}
+
+.canvas-root .canvas-tile--selected {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue) 16%, transparent), 0 12px 34px var(--shadow);
+}
+.canvas-root .canvas-tile--focus {
+  border-color: var(--strong);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--strong) 12%, transparent), 0 18px 44px var(--shadow);
+}
+/* The operator's own intent outranks the run ring: a tile they selected or focused must read as
+   selected or focused first. The run state is still carried by the dot and the badge. */
+.canvas-root .canvas-tile--selected.is-running,
+.canvas-root .canvas-tile--selected.is-done,
+.canvas-root .canvas-tile--selected.is-failed,
+.canvas-root .canvas-tile--selected.is-blocked {
+  border-color: var(--blue);
+  animation: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue) 16%, transparent), 0 12px 34px var(--shadow);
+}
+.canvas-root .canvas-tile--focus.is-running,
+.canvas-root .canvas-tile--focus.is-done,
+.canvas-root .canvas-tile--focus.is-failed,
+.canvas-root .canvas-tile--focus.is-blocked {
+  border-color: var(--strong);
+  animation: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--strong) 12%, transparent), 0 18px 44px var(--shadow);
+}
+/* At glance the tile is a few dozen px tall — drop the padding so title + preview still fit. */
+.canvas-root .canvas-tile--glance {
+  gap: 3px;
+  padding: 8px 10px;
+}
+
+.canvas-root .canvas-tile-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.canvas-root .canvas-tile-glyph {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+}
+.canvas-root .canvas-tile-glyph--form { background: color-mix(in srgb, var(--kind-form) 14%, transparent); color: var(--kind-form); }
+.canvas-root .canvas-tile-glyph--llm { background: color-mix(in srgb, var(--kind-llm) 14%, transparent); color: var(--kind-llm); }
+.canvas-root .canvas-tile-glyph--coding { background: color-mix(in srgb, var(--kind-coding) 14%, transparent); color: var(--kind-coding); }
+.canvas-root .canvas-tile-glyph--image { background: color-mix(in srgb, var(--kind-image) 14%, transparent); color: var(--kind-image); }
+
+.canvas-root .canvas-tile-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--faint);
+}
+.canvas-root .canvas-tile-dot--running {
+  background: var(--amber);
+  animation: canvas-run-pulse 1.6s ease-in-out infinite;
+}
+.canvas-root .canvas-tile-dot--done { background: var(--ok); }
+.canvas-root .canvas-tile-dot--failed { background: var(--err); }
+.canvas-root .canvas-tile-dot--blocked { background: var(--warn); }
+@keyframes canvas-run-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .canvas-root .canvas-tile-dot--running { animation: none; }
+  .canvas-root .canvas-tile.is-running { animation: none; }
+}
+
+.canvas-root .canvas-tile-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: var(--fw-bold);
+  line-height: 1.3;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.canvas-root .canvas-tile--glance .canvas-tile-title { font-size: 12px; }
+
+.canvas-root .canvas-tile-badge {
+  flex: none;
+  font-size: 9px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.canvas-root .canvas-tile-badge--running {
+  background: color-mix(in srgb, var(--amber) 18%, transparent);
+  color: var(--warn);
+  border-color: color-mix(in srgb, var(--amber) 45%, transparent);
+}
+.canvas-root .canvas-tile-badge--done {
+  background: color-mix(in srgb, var(--ok) 14%, transparent);
+  color: var(--ok);
+  border-color: color-mix(in srgb, var(--ok) 40%, transparent);
+}
+.canvas-root .canvas-tile-badge--failed {
+  background: color-mix(in srgb, var(--err) 12%, transparent);
+  color: var(--err);
+  border-color: color-mix(in srgb, var(--err) 38%, transparent);
+}
+.canvas-root .canvas-tile-badge--blocked {
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  color: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 38%, transparent);
+}
+
+/* Binding state. 'pending' is amber on purpose: an UNKNOWN bind outcome is a warning the
+   operator must resolve, never a quiet neutral chip. */
+.canvas-root .canvas-tile-bind {
+  flex: none;
+  font-size: 9px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--muted);
+}
+.canvas-root .canvas-tile-bind--bound {
+  color: var(--ok);
+  border-color: color-mix(in srgb, var(--ok) 40%, transparent);
+  background: color-mix(in srgb, var(--ok) 12%, transparent);
+}
+.canvas-root .canvas-tile-bind--pending {
+  color: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+}
+.canvas-root .canvas-tile-bind--unbound {
+  color: var(--faint);
+}
+
+.canvas-root .canvas-tile-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.canvas-root .canvas-tile-preview {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.canvas-root .canvas-tile-runtime {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: var(--fw-med);
+  color: var(--faint);
+}
+.canvas-root .canvas-tile-chip {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.canvas-root .canvas-tile-chip--unset { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 35%, transparent); }
+
+.canvas-root .canvas-tile-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.canvas-root .canvas-tile-action {
+  padding: 4px 9px;
+  font-family: inherit;
+  font-size: var(--fs-meta);
+  font-weight: var(--fw-med);
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+.canvas-root .canvas-tile-action:hover { border-color: var(--strong); }
+.canvas-root .canvas-tile-action:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Form fields (the only non-conversation body). */
+.canvas-root .canvas-form-fields { display: flex; flex-direction: column; gap: 4px; min-height: 0; overflow: auto; }
+.canvas-root .canvas-form-field { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
+.canvas-root .canvas-form-field-label { color: var(--faint); flex: none; }
+.canvas-root .canvas-form-field-value {
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.canvas-root .canvas-form-field-value--empty { color: var(--faint); }
+
+/* Resize grip, bottom-right. */
+.canvas-root .canvas-tile-resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: nwse-resize;
+  opacity: 0;
+  transition: opacity 0.14s ease;
+}
+.canvas-root .canvas-tile:hover .canvas-tile-resize { opacity: 1; }
+.canvas-root .canvas-tile-resize::after {
+  content: '';
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--faint);
+  border-bottom: 2px solid var(--faint);
+  border-bottom-right-radius: 3px;
+}
+
+/* ---- transcript ------------------------------------------------------------------------- */
+
+.canvas-root .canvas-transcript {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+.canvas-root .canvas-transcript-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.canvas-root .canvas-transcript-scroll::-webkit-scrollbar { width: 6px; }
+.canvas-root .canvas-transcript-scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
+.canvas-root .canvas-transcript-turn {
+  max-width: 92%;
+  padding: 5px 9px;
+  border-radius: 11px;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.canvas-root .canvas-transcript-turn--user { align-self: flex-end; background: var(--strong); color: var(--strong-text); }
+.canvas-root .canvas-transcript-turn--agent { align-self: flex-start; background: var(--soft); color: var(--text); border: 1px solid var(--line); }
+.canvas-root .canvas-transcript-turn--system { align-self: center; max-width: 100%; background: transparent; color: var(--muted); font-size: var(--fs-meta); }
+.canvas-root .canvas-transcript-turn.is-warn { color: var(--warn); }
+.canvas-root .canvas-transcript-turn.is-error { color: var(--err); }
+/* "We could not READ the history" — visually distinct from "nothing was ever said". */
+.canvas-root .canvas-transcript-notice {
+  flex: none;
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  font-weight: var(--fw-med);
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warn) 32%, transparent);
+  border-radius: 9px;
+  padding: 4px 8px;
+}
+.canvas-root .canvas-transcript-empty { font-size: 11px; color: var(--faint); }
+.canvas-root .canvas-transcript-loading { font-size: 11px; color: var(--faint); }
+.canvas-root .canvas-transcript-status {
+  flex: none;
+  font-size: 10px;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  padding-top: 4px;
+}
+
+/* ---- composer --------------------------------------------------------------------------- */
+
+.canvas-root .canvas-composer {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.canvas-root .canvas-composer-notice {
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+/* A standing notice under the input: no personal or sensitive data; AI output can be wrong. */
+.canvas-root .canvas-composer-disclaimer {
+  display: block;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.canvas-root .canvas-composer-blocked {
+  font-size: var(--fs-meta);
+  font-weight: var(--fw-med);
+  line-height: 1.5;
+  color: var(--err);
+}
+.canvas-root .canvas-composer-row { display: flex; gap: 6px; align-items: flex-end; }
+.canvas-root .canvas-composer-input {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  padding: 7px 9px;
+  font-family: inherit;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.14s ease;
+}
+.canvas-root .canvas-composer-input:focus { border-color: var(--strong); }
+.canvas-root .canvas-composer-input:disabled { background: var(--soft); cursor: not-allowed; }
+.canvas-root .canvas-composer-send {
+  flex: none;
+  padding: 7px 12px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  color: var(--strong-text);
+  background: var(--strong);
+  border: 1px solid var(--strong);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.canvas-root .canvas-composer-send:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ---- node output --------------------------------------------------------------------------
+   What this node produced, i.e. the exact text a downstream node receives. Deliberately set off
+   from the transcript: the transcript is the conversation, this is the RESULT, and confusing the
+   two is how an operator ends up wiring a graph whose preconditions are not what they think. */
+.canvas-root .canvas-tile-output {
+  flex: none;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--ok) 26%, var(--line));
+  background: color-mix(in srgb, var(--ok) 5%, var(--card));
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.canvas-root .canvas-tile-output-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.canvas-root .canvas-tile-output-label {
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  color: var(--ok);
+  white-space: nowrap;
+}
+.canvas-root .canvas-tile-output-meta {
+  font-size: var(--fs-micro);
+  color: var(--faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.canvas-root .canvas-tile-output-body {
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--text);
+  /* Two lines is the summary; the whole thing is one click away in the transcript. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+/* A partial captured off a FAILED run is evidence, not a result — it must not wear the success
+   colour, or a failed node reads as a finished one at a glance. */
+.canvas-root .canvas-tile.is-failed .canvas-tile-output {
+  border-color: color-mix(in srgb, var(--err) 30%, var(--line));
+  background: color-mix(in srgb, var(--err) 5%, var(--card));
+}
+.canvas-root .canvas-tile.is-failed .canvas-tile-output-label { color: var(--err); }
+
+/* ---- ports ------------------------------------------------------------------------------ */
+
+.canvas-root .canvas-port {
+  position: absolute;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px; /* center on the anchor point */
+  padding: 0;
+  border-radius: 50%;
+  border: 1.8px solid var(--strong);
+  background: var(--card);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+  appearance: none;
+  -webkit-appearance: none;
+  opacity: 0.55; /* resting dim; full on tile hover */
+  z-index: 3;
+  transition: opacity 0.15s ease, background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.canvas-root .canvas-tile:hover .canvas-port { opacity: 1; }
+.canvas-root .canvas-port--image { border-color: var(--kind-image); }
+.canvas-root .canvas-port:disabled { cursor: default; }
+.canvas-root .canvas-port:focus-visible {
+  outline: 2px solid var(--strong);
+  outline-offset: 2px;
+  opacity: 1;
+}
+.canvas-root .canvas-port--interactive { cursor: crosshair; }
+.canvas-root .canvas-port--interactive:hover,
+.canvas-root .canvas-port.is-pending {
+  background: var(--strong);
+  transform: scale(1.22);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.26);
+  opacity: 1;
+}
+
+/* A port carrying wires is FILLED and always at full opacity: whether something is connected is
+   structure, not a hover detail, and it has to survive the tile losing hover and the canvas
+   zooming out. An empty port stays hollow. */
+.canvas-root .canvas-port.is-connected {
+  background: var(--strong);
+  opacity: 1;
+}
+.canvas-root .canvas-port--image.is-connected { background: var(--kind-image); }
+
+/* Fan-in count. A multi input carrying several upstreams grows into a labelled pill — you must be
+   able to see that three things feed this node without opening anything. */
+.canvas-root .canvas-port.has-count {
+  width: auto;
+  min-width: 18px;
+  height: 16px;
+  margin: -8px 0 0 -9px;
+  padding: 0 4px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.canvas-root .canvas-port-count {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-med);
+  line-height: 1;
+  color: var(--strong-text);
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+/* ---- marquee ---------------------------------------------------------------------------- */
+
+.canvas-root .canvas-marquee {
+  position: absolute;
+  z-index: 6;
+  pointer-events: none;
+  border: 1px solid var(--blue);
+  background: color-mix(in srgb, var(--blue) 10%, transparent);
+  border-radius: 4px;
+}
+
+/* ---- add-node menu (fixed chrome, panel glass) ------------------------------------------- */
+
+.canvas-root .canvas-add-menu {
+  position: absolute;
+  z-index: 30;
+  width: 200px;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 18px 44px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.canvas-root .canvas-add-menu-title {
+  padding: 4px 8px;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.canvas-root .canvas-add-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 8px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: var(--fw-med);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.14s ease;
+}
+.canvas-root .canvas-add-menu-item:hover {
+  background: color-mix(in srgb, var(--blue) 10%, transparent);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   Panels & chrome — run controls, timeline drawer, minimap, inspector dock, command bar.
+   These live OUTSIDE the transformed world (fixed chrome), so backdrop blur is safe here and
+   deliberately absent inside the world, where it would rasterize blurry at non-1:1 scale.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+
+/* ---- run controls (top-left: the host parks its launcher top-center, login chip top-right) ---- */
+.canvas-run-btn {
+  height: 38px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(120deg, var(--blue), var(--teal));
+  color: #fff;
+  font-family: inherit;
+  font-size: var(--fs-title);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(16, 182, 166, 0.3);
+  transition: transform 0.14s var(--ease), opacity 0.14s var(--ease);
+  white-space: nowrap;
+}
+.canvas-run-btn:hover:not(:disabled) { transform: translateY(-1px); }
+.canvas-run-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.canvas-run-btn--stop {
+  background: var(--card);
+  color: var(--text);
+  border: 1.5px solid var(--strong);
+  box-shadow: 0 10px 26px var(--shadow);
+}
+.canvas-run-note {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 26px var(--shadow);
+  font-size: 11px;
+  font-weight: var(--fw-med);
+  color: var(--muted);
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.canvas-run-note--err {
+  color: var(--err);
+  border-color: color-mix(in srgb, var(--err) 34%, transparent);
+}
+.canvas-run-timeline-toggle {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  box-shadow: 0 10px 26px var(--shadow);
+  white-space: nowrap;
+}
+.canvas-run-timeline-toggle:hover { border-color: var(--strong); }
+
+/* ---- execution timeline drawer ---- */
+.canvas-runline {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 22px 58px var(--shadow);
+  color: var(--text);
+  overflow: hidden;
+  transition: opacity 160ms ease, visibility 160ms;
+}
+.canvas-runline-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.canvas-runline-title {
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.canvas-runline-meta {
+  flex: 1;
+  font-size: 10px;
+  color: var(--faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.canvas-runline-close {
+  border: none;
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 6px;
+}
+.canvas-runline-close:hover { color: var(--text); }
+.canvas-runline-rows {
+  overflow-y: auto;
+  padding: 8px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.canvas-runline-row {
+  display: grid;
+  grid-template-columns: 150px 96px 1fr 48px 170px;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--text);
+}
+.canvas-runline-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-body);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.canvas-runline-dot { width: 8px; height: 8px; border-radius: 3px; flex: none; }
+.canvas-runline-node { min-width: 0; border: 0; border-radius: 5px; padding: 6px 2px; background: transparent; color: inherit; font: inherit; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.canvas-runline-node:hover { color: var(--blue); }
+.canvas-runline-node:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+.canvas-runline-error { grid-column: 1 / -1; margin: 0 0 8px; color: var(--err); line-height: 1.5; overflow-wrap: anywhere; }
+.canvas-run-deliveries summary { cursor: pointer; }
+.canvas-run-deliveries ul { margin: 6px 0 0; padding-left: 16px; }
+@media (max-width: 680px) {
+  .canvas-runline-row { grid-template-columns: minmax(0, 1fr) auto 40px; gap: 8px; }
+  .canvas-runline-row .canvas-runline-bar { display: none; }
+  .canvas-runline-runtime { grid-column: 1 / -1; }
+  .canvas-runline .canvas-runline-state { white-space: normal; max-width: 120px; overflow-wrap: anywhere; }
+  .canvas-runline-node { min-height: 44px; }
+}
+.canvas-runline-state {
+  font-size: 10px;
+  font-weight: var(--fw-bold);
+  padding: 2px 8px;
+  border-radius: 12px;
+  width: fit-content;
+  white-space: nowrap;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--faint);
+}
+.canvas-runline-state--running {
+  background: color-mix(in srgb, var(--blue) 13%, transparent);
+  color: var(--blue);
+  border-color: transparent;
+}
+.canvas-runline-state--done {
+  background: color-mix(in srgb, var(--ok) 13%, transparent);
+  color: var(--ok);
+  border-color: transparent;
+}
+.canvas-runline-state--failed {
+  background: color-mix(in srgb, var(--err) 13%, transparent);
+  color: var(--err);
+  border-color: transparent;
+}
+/* Cached: it contributed, but it did not run. Neutral ink, never the success green. */
+.canvas-runline-state--cached {
+  background: color-mix(in srgb, var(--muted) 12%, transparent);
+  color: var(--muted);
+  border-color: transparent;
+}
+.canvas-runline-fill--cached { background: var(--muted); opacity: 0.35; }
+.canvas-runline-state--blocked {
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+  color: var(--warn);
+  border-color: transparent;
+}
+.canvas-runline-bar {
+  position: relative;
+  height: 12px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--line) 45%, transparent);
+  overflow: hidden;
+}
+.canvas-runline-fill { position: absolute; top: 0; bottom: 0; border-radius: 6px; background: var(--blue); }
+.canvas-runline-fill--running { background: linear-gradient(90deg, var(--blue), var(--teal)); }
+.canvas-runline-fill--done { background: var(--ok); opacity: 0.75; }
+.canvas-runline-fill--failed { background: var(--err); opacity: 0.75; }
+.canvas-runline-fill--blocked { background: var(--warn); opacity: 0.6; }
+.canvas-runline-elapsed,
+.canvas-runline-runtime {
+  font-family: 'SFMono-Regular', 'SF Mono', Consolas, monospace;
+  font-size: 10px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.canvas-runline-elapsed { text-align: right; }
+
+/* ---- minimap ---- */
+.canvas-minimap {
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 18px 44px var(--shadow);
+  cursor: crosshair;
+  touch-action: none;
+  transition: opacity 160ms ease, visibility 160ms;
+}
+/* An open node opens where its card sat, so it can reach any corner of the stage: the map steps aside
+   rather than cover it (its composer usually sits right where the map does). The run timeline does the
+   same, since it spans the bottom of the stage; both come back when the node closes. */
+.canvas-root[data-node-open] :is(.canvas-minimap, .canvas-runline) { opacity: 0; visibility: hidden; pointer-events: none; }
+.canvas-minimap-node {
+  position: absolute;
+  border-radius: 3px;
+  background: var(--strong);
+  opacity: 0.75;
+  pointer-events: none;
+}
+.canvas-minimap-view {
+  position: absolute;
+  border: 2px solid var(--blue);
+  background: color-mix(in srgb, var(--blue) 8%, transparent);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+/* ---- inspector dock (right) ---- */
+.canvas-inspector {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 360px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid var(--line);
+  box-shadow: -18px 0 44px var(--shadow);
+  color: var(--text);
+}
+.canvas-inspector-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.canvas-inspector-title { font-size: var(--fs-title); font-weight: var(--fw-bold); }
+.canvas-inspector-close {
+  border: none;
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+}
+.canvas-inspector-close:hover { color: var(--text); }
+.canvas-inspector-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.canvas-inspector-label {
+  margin-top: 6px;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.canvas-inspector-input,
+.canvas-inspector-persona {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.14s var(--ease);
+}
+.canvas-inspector-persona { resize: vertical; min-height: 92px; font-size: var(--fs-body); line-height: 1.55; }
+.canvas-inspector-input:focus,
+.canvas-inspector-persona:focus { border-color: var(--strong); }
+.canvas-inspector-seg { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.canvas-inspector-seg-item {
+  flex: 1;
+  padding: 7px 0;
+  border: none;
+  background: var(--card);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-med);
+  cursor: pointer;
+}
+.canvas-inspector-seg-item + .canvas-inspector-seg-item { border-left: 1px solid var(--line); }
+.canvas-inspector-seg-item[aria-checked='true'] {
+  background: color-mix(in srgb, var(--teal) 14%, transparent);
+  color: var(--teal);
+  font-weight: var(--fw-bold);
+}
+.canvas-inspector-runtime { display: flex; flex-direction: column; gap: 6px; }
+.canvas-inspector-hint { font-size: var(--fs-meta); line-height: 1.5; color: var(--faint); }
+/* Inline hand-off inside a hint (e.g. "去创建公司") — reads as a link, not a second button
+   competing with the panel's real actions. */
+.canvas-inspector-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.canvas-inspector-link:hover:not(:disabled) { color: var(--teal); }
+.canvas-inspector-link:disabled { color: var(--faint); cursor: default; text-decoration: none; }
+.canvas-inspector-bind {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--strong);
+  background: var(--strong);
+  color: var(--strong-text);
+  font-family: inherit;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+.canvas-inspector-bind:disabled { opacity: 0.45; cursor: not-allowed; }
+.canvas-inspector-outcome { font-size: var(--fs-meta); font-weight: var(--fw-med); line-height: 1.5; }
+.canvas-inspector-outcome--ok { color: var(--ok); }
+.canvas-inspector-outcome--warn { color: var(--warn); }
+.canvas-inspector-outcome--err { color: var(--err); }
+.canvas-inspector-field-row { display: flex; gap: 6px; align-items: center; }
+.canvas-inspector-field-label { flex: 0 0 96px; }
+.canvas-inspector-field-value { flex: 1; }
+.canvas-inspector-field-remove {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--faint);
+  cursor: pointer;
+}
+.canvas-inspector-field-remove:hover { color: var(--err); }
+.canvas-inspector-add-field {
+  align-self: flex-start;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px dashed var(--line);
+  background: transparent;
+  color: var(--blue);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: var(--fw-med);
+  cursor: pointer;
+}
+.canvas-inspector-foot { display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--line); }
+.canvas-inspector-save {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: 999px;
+  border: 1px solid var(--strong);
+  background: var(--strong);
+  color: var(--strong-text);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+.canvas-inspector-cancel {
+  width: 84px;
+  padding: 9px 0;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: var(--fw-med);
+  cursor: pointer;
+}
+.canvas-inspector-cancel:hover { border-color: var(--strong); color: var(--text); }
+
+/* ---- command bar (palette + search) ---- */
+.canvas-cmdbar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 14vh;
+  background: color-mix(in srgb, var(--text) 22%, transparent);
+  backdrop-filter: blur(2px);
+}
+.canvas-cmdbar {
+  width: min(640px, 92vw);
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  box-shadow: 0 30px 80px var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.canvas-cmdbar-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--card);
+}
+.canvas-cmdbar-list {
+  max-height: 46vh;
+  overflow-y: auto;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.canvas-cmdbar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: var(--fs-title);
+  text-align: left;
+  cursor: pointer;
+}
+.canvas-cmdbar-row[aria-selected='true'] { background: color-mix(in srgb, var(--blue) 12%, transparent); }
+.canvas-cmdbar-row:disabled { opacity: 0.4; cursor: not-allowed; }
+.canvas-cmdbar-row-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--fw-med);
+}
+.canvas-cmdbar-row-hint {
+  color: var(--faint);
+  font-size: var(--fs-meta);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 46%;
+}
+.canvas-cmdbar-row-keys {
+  font-family: 'SFMono-Regular', 'SF Mono', Consolas, monospace;
+  font-size: 10px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2px 6px;
+  background: var(--soft);
+}
+.canvas-cmdbar-empty { padding: 18px 16px; font-size: 12px; color: var(--faint); }
+.canvas-cmdbar-foot {
+  padding: 8px 14px;
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-meta);
+  color: var(--faint);
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.canvas-cmdbar-note { font-size: var(--fs-meta); color: var(--muted); }
+.canvas-cmdbar-note--warn { color: var(--warn); }
+.canvas-cmdbar-note--err { color: var(--err); }

@@ -1,0 +1,19 @@
+.node-team-editor { display: grid; gap: 10px; border-top: 1px solid var(--awwo-line, #dce4e1); margin-top: 18px; padding-top: 16px; font-size: 12px; }
+.node-team-editor label { display: grid; gap: 6px; min-width: 0; }
+.node-team-editor .node-team-enable { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.node-team-editor .node-team-enable input { flex: 0 0 auto; }
+.node-team-editor p { margin: 0; line-height: 1.6; }
+.node-team-editor .node-team-limits { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.node-team-editor .node-team-limits label:last-child { grid-column: 1 / -1; }
+.node-team-editor .node-team-members { display: grid; gap: 12px; }
+.node-team-editor .node-team-member { position: relative; display: grid; gap: 10px; min-width: 0; margin: 0; border: 1px solid var(--awwo-line, #dce4e1); border-radius: 8px; padding: 10px; }
+.node-team-editor .node-team-member legend { padding: 0 5px; font-weight: 600; }
+.node-team-editor .node-team-member-actions { display: flex; justify-content: flex-end; gap: 5px; }
+.node-team-editor .node-team-member-actions button { width: 28px; height: 26px; border: 1px solid var(--awwo-line, #dce4e1); border-radius: 5px; background: var(--awwo-card, transparent); color: inherit; }
+.node-team-editor .node-team-tools { display: grid; gap: 8px; }
+.node-team-editor .node-team-tools label { display: flex; align-items: center; gap: 8px; }
+.node-team-editor input, .node-team-editor select, .node-team-editor textarea { box-sizing: border-box; width: 100%; min-width: 0; }
+.node-team-editor input[type='checkbox'] { width: auto; }
+.node-team-editor button:disabled, .node-team-editor input:disabled, .node-team-editor select:disabled, .node-team-editor textarea:disabled { opacity: .55; cursor: not-allowed; }
+.node-team-editor [role='alert'] ul { padding-left: 18px; overflow-wrap: anywhere; }
+.node-team-badge { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; font-size: 10px; line-height: 1.5; color: var(--awwo-teal, #28776b); }

@@ -1,0 +1,16 @@
+{
+  "name": "@awwo/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AwwO canvas framework core: document model, ports and wires, contracts, plan protocol, DAG and review-graph engines, node teams, worker protocol.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
+}

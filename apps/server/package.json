@@ -1,0 +1,17 @@
+{
+  "name": "@awwo/server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AwwO Canvas orchestrator: hot-plug runtime registry, planner, assistant router, node teams and graph runs.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/main.ts",
+    "start": "tsx src/main.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@awwo/core": "0.1.0"
+  }
+}

@@ -1,0 +1,534 @@
+/* Shared with the ClawHunt iOS design language: Theme/Colors.swift,
+   Typography.swift and DesignKit.swift. Keep the hosted app and Mac shell on
+   the same semantic palette; solid canvas cards remain sharp at every zoom. */
+:root {
+  /* AppearanceScope writes account choices inline to these shared kernel
+     tokens. Inline values win; only the untouched default becomes iOS blue. */
+  --bg-base: #f3f7fc;
+  --bg-sidebar: #fff;
+  --bg-card: #fff;
+  --text-primary: #0f172a;
+  --text-secondary: #526277;
+  --border-light: #0f172a1a;
+  --accent: #246ce3;
+  --accent-soft: #2f7df610;
+  --warn: #92601b;
+  --warn-soft: #fff8e9;
+  --danger-bg: #dc2626;
+  --agent-running: #2f7df6;
+  --saas-bg: var(--bg-base);
+  --saas-sidebar: var(--bg-sidebar);
+  --saas-card: var(--bg-card);
+  --saas-text: var(--text-primary);
+  --saas-muted: var(--text-secondary);
+  --saas-border: var(--border-light);
+  --saas-accent: var(--accent);
+  --saas-accent-text: #fff;
+  --saas-soft: var(--accent-soft);
+  --saas-input: color-mix(in srgb, var(--bg-base) 65%, var(--bg-card));
+  --saas-danger: var(--danger-bg);
+  --saas-danger-bg: color-mix(in srgb, var(--danger-bg) 9%, var(--bg-card));
+  --saas-warning: var(--warn);
+  --saas-warning-bg: var(--warn-soft);
+  --ios-blue: #2f7df6;
+  --ios-green: #27c77a;
+  --ios-secondary: var(--text-secondary);
+  --ios-surface: color-mix(in srgb, var(--bg-base) 90%, var(--accent));
+  --ios-shadow: 0 4px 18px #18325508, 0 16px 42px #18325506;
+  --ios-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  --ios-mono: 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg-base: #05070c;
+  --bg-sidebar: #0e1421;
+  --bg-card: #0e1421;
+  --text-primary: #f8fafc;
+  --text-secondary: #a1afc1;
+  --border-light: #94a3b82e;
+  --accent: #78aefc;
+  --accent-soft: #2f7df61f;
+  --warn: #f5b740;
+  --warn-soft: #352914;
+  --danger-bg: #f4626f;
+  --saas-accent-text: #fff;
+  --ios-shadow: 0 6px 22px #0003, 0 18px 44px #0002;
+  color-scheme: dark;
+}
+
+/* Match the legacy dark selector's specificity while keeping account-owned
+   base tokens authoritative. Never replace a saved custom palette with literals. */
+:root, :root[data-theme='dark'] {
+  --saas-bg: var(--bg-base);
+  --saas-sidebar: var(--bg-sidebar);
+  --saas-card: var(--bg-card);
+  --saas-text: var(--text-primary);
+  --saas-muted: var(--text-secondary);
+  --saas-border: var(--border-light);
+  --saas-accent: var(--accent);
+  --saas-accent-text: #fff;
+  --saas-soft: var(--accent-soft);
+  --saas-input: color-mix(in srgb, var(--bg-base) 65%, var(--bg-card));
+  --saas-danger: var(--danger-bg);
+  --saas-danger-bg: color-mix(in srgb, var(--danger-bg) 9%, var(--bg-card));
+  --saas-warning: var(--warn);
+  --saas-warning-bg: var(--warn-soft);
+}
+
+/* Authentication, account and canvas library. */
+.saas-login, .saas-notice, .saas-dashboard, .saas-canvas-shell {
+  font-family: var(--ios-font);
+  -webkit-font-smoothing: antialiased;
+}
+.saas-login *, .saas-dashboard *, .saas-notice * { box-sizing: border-box; }
+.saas-login {
+  position: relative;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 440px);
+  gap: clamp(40px, 8vw, 140px);
+  padding: max(60px, 9vh) max(32px, calc((100vw - 1120px) / 2));
+  background: radial-gradient(ellipse at 15% 15%, #2f7df60c, transparent 60%), var(--saas-bg);
+}
+.saas-logo, .saas-login-brand > span { font-size: 27px; font-weight: 700; letter-spacing: -1px; }
+.saas-logo { display: inline-flex; align-items: center; gap: 10px; }
+.saas-logo::before {
+  content: '';
+  display: inline-block;
+  width: 23px;
+  height: 23px;
+  flex: 0 0 auto;
+  border: 6px solid var(--ios-blue);
+  border-right-color: var(--ios-green);
+  border-radius: 9px;
+  transform: rotate(-12deg);
+}
+.saas-login h1 { font-size: clamp(34px, 4vw, 52px); font-weight: 700; line-height: 1.22; letter-spacing: -1.8px; }
+.saas-login-brand p { max-width: 460px; font-size: 15px; }
+.saas-card { border-radius: 22px; padding: 32px; gap: 20px; box-shadow: var(--ios-shadow); }
+.saas-card h2 { font-size: 27px; letter-spacing: -.6px; font-weight: 700; }
+.saas-card label { font-size: 13px; color: var(--ios-secondary); }
+.saas-card input, .saas-create input { min-height: 46px; border-radius: 12px; padding-inline: 14px; transition: border-color .15s, box-shadow .15s; }
+.saas-card input:focus, .saas-create input:focus { outline: none; border-color: var(--ios-blue); box-shadow: 0 0 0 3px #2f7df61a; }
+.saas-eyebrow { font-family: var(--ios-mono); letter-spacing: 1.6px; font-size: 10px; }
+.saas-login button, .saas-dashboard button, .saas-notice button, .saas-card button {
+  min-height: 38px; border-radius: 11px; font-family: inherit; font-size: 13px; font-weight: 500;
+  transition: background .15s, border-color .15s, box-shadow .15s;
+}
+.saas-login button:not(:disabled):hover, .saas-dashboard button:not(:disabled):hover { border-color: #2f7df64d; }
+button.saas-primary, .saas-primary-link, .saas-account-actions .saas-card button.saas-primary {
+  min-height: 44px; border-radius: 13px; border: 1px solid #1f66df;
+  background: linear-gradient(180deg, #246ce3, #1f66df); color: #fff;
+  box-shadow: 0 5px 14px #2f7df61f; font-weight: 600;
+}
+button.saas-primary:hover:not(:disabled), .saas-primary-link:hover { background: linear-gradient(180deg, #276bdd, #1f66df); border-color: #1f66df; }
+.saas-card > button.saas-primary { margin-top: 4px; }
+.saas-dashboard { padding: 0 max(24px, calc((100vw - 1240px) / 2)) 64px; }
+.saas-dashboard > header { min-height: 88px; height: auto; padding-block: 20px; }
+.saas-page-intro { margin: 52px 0 28px; }
+.saas-page-intro h1 { font-size: 36px; line-height: 1.2; font-weight: 700; letter-spacing: -1.3px; margin: 12px 0; }
+.saas-page-intro p { margin: 0; font-size: 14px; }
+.saas-create { gap: 12px; margin: 28px 0; }
+.saas-create input { width: min(380px, 65vw); background: var(--saas-card); }
+.saas-list-pager { gap: 8px; margin: 24px 0 20px; color: var(--saas-muted); font-size: 12px; }
+.saas-list-pager button { padding: 8px 12px; }
+.saas-canvas-list { gap: 20px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.saas-canvas-list article.saas-canvas-card { min-height: 228px; border-radius: 20px; box-shadow: var(--ios-shadow); transition: border-color .15s, box-shadow .15s; }
+.saas-canvas-list article.saas-canvas-card:hover { border-color: #2f7df659; box-shadow: 0 8px 30px #2f7df612; }
+.saas-canvas-list button.saas-canvas-open { padding: 24px 24px 18px !important; border-radius: 0; background: transparent; }
+.saas-canvas-open > span { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: var(--saas-accent); background: var(--saas-soft); font-size: 26px; }
+.saas-canvas-card h2 { margin: 20px 0 8px; font-size: 18px; line-height: 1.4; font-weight: 600; overflow-wrap: anywhere; }
+.saas-canvas-card p { font-family: var(--ios-mono); font-size: 11px; margin: 0; }
+.saas-canvas-actions { gap: 8px; padding: 0 24px 20px; }
+.saas-canvas-actions button { min-height: 32px; padding: 6px 12px; font-size: 12px; color: var(--saas-muted); background: var(--saas-input); }
+.saas-account-actions { gap: 10px; }
+.saas-account-actions select { min-height: 34px; border-radius: 10px; padding: 7px 10px; color: var(--saas-text); }
+.saas-account-actions > button, .saas-account-actions > a, .saas-account-actions > .saas-preferences > button { min-height: 32px; align-items: center; padding: 6px 8px; font-size: 12px; border-radius: 9px; }
+.saas-preferences { gap: 4px; }
+.saas-preferences button { min-height: 32px; border-radius: 9px; font-size: 12px; }
+.saas-cloud-status { min-height: 43px; padding: 6px 18px; gap: 8px 14px; background: var(--saas-card); font-size: 11px; }
+.saas-canvas-back { min-height: 30px; border-radius: 9px; padding: 5px 9px; border-color: transparent; background: var(--saas-soft); }
+.saas-cloud-status > button, .saas-graph-control > button { min-height: 28px; border-radius: 8px; padding: 4px 8px; }
+.saas-native-dialog, .saas-dialog-backdrop .saas-card { border-radius: 22px; box-shadow: 0 24px 100px #0003; }
+.saas-native-dialog::backdrop, .saas-dialog-backdrop { background: #09152a55; backdrop-filter: blur(8px); }
+.saas-graph-panel { border-radius: 20px; box-shadow: 0 20px 80px #0003; }
+.saas-login :is(button, a):focus-visible, .saas-dashboard :is(button, a, select):focus-visible, .saas-canvas-shell :is(button, a, select):focus-visible { outline: 2px solid var(--ios-blue); outline-offset: 3px; }
+
+/* Three clear regions: models, canvas, Bots. Only the canvas world is zoomed. */
+.awwo-workspace, :root[data-theme='dark'] .awwo-workspace {
+  --awwo-bg: var(--saas-bg);
+  --awwo-surface: var(--saas-card);
+  --awwo-ink: var(--saas-text);
+  --awwo-muted: var(--saas-muted);
+  --awwo-border: var(--saas-border);
+  --awwo-accent: var(--saas-accent);
+  --awwo-accent-soft: var(--saas-soft);
+  --awwo-hover: var(--saas-soft);
+  font-family: var(--ios-font);
+  -webkit-font-smoothing: antialiased;
+}
+.awwo-workspace .canvas-root, :root[data-theme='dark'] .awwo-workspace .canvas-root {
+  --page: var(--saas-bg);
+  --panel: var(--saas-card);
+  --card: var(--saas-card);
+  --grid: #a7bbd43d;
+  --text: var(--saas-text);
+  --muted: var(--saas-muted);
+  --faint: var(--saas-muted);
+  --line: var(--saas-border);
+  --soft: var(--saas-input);
+  --strong: var(--ios-blue);
+  --strong-text: #fff;
+  --blue: var(--ios-blue);
+  --teal: var(--ios-green);
+  --edge: #7499c6a6;
+  --shadow: #18325512;
+  font-family: var(--ios-font);
+}
+:root[data-theme='dark'] .awwo-workspace .canvas-root { --grid: #718bad33; --edge: #78aefc80; --shadow: #0004; }
+.awwo-header { min-height: 58px; padding: 10px 22px; }
+.awwo-breadcrumb, :root[data-theme='dark'] .awwo-breadcrumb { font-size: 12px; color: var(--saas-text); font-weight: 600; gap: 10px; }
+.awwo-breadcrumb > span, :root[data-theme='dark'] .awwo-breadcrumb > span { color: var(--saas-muted); font-weight: 400; }
+.awwo-canvas-bar { min-height: 44px; padding-inline: 22px; gap: 12px; border-top: 1px solid var(--saas-border); }
+.awwo-canvas-tab { border-bottom-width: 2px; font-size: 12px; }
+.awwo-canvas-meta { font-size: 11px; color: var(--saas-muted); }
+.awwo-icon-button { width: 34px; height: 34px; border-radius: 10px; }
+.awwo-assistant-toggle { border-radius: 10px; min-height: 32px; }
+.awwo-workspace .awwo-run-slot .canvas-run-btn, .awwo-workspace .awwo-primary, .awwo-workspace .awwo-assistant-send {
+  background: linear-gradient(180deg, #246ce3, #1f66df); border-color: #1f66df; color: #fff; border-radius: 10px;
+  box-shadow: 0 3px 10px #2f7df61a; font-weight: 600;
+}
+.awwo-workspace .awwo-run-slot .canvas-run-btn { min-height: 33px; padding: 7px 12px; font-size: 12px; }
+.awwo-workspace .awwo-run-slot .canvas-run-btn--stop { background: var(--saas-danger); border-color: var(--saas-danger); }
+.awwo-workspace .awwo-primary:hover { background: linear-gradient(180deg, #276bdd, #1f66df); }
+/* The older dark theme supplies a dark label for its pale green buttons. The
+   iOS primary fill is saturated blue in both themes and always uses white. */
+:root[data-theme='dark'] .awwo-workspace .awwo-run-slot .canvas-run-btn,
+:root[data-theme='dark'] .awwo-workspace .awwo-primary,
+:root[data-theme='dark'] .awwo-workspace .awwo-assistant-send { color: #fff; }
+:root[data-theme='dark'] .awwo-workspace .awwo-primary:hover { background: linear-gradient(180deg, #276bdd, #1f66df); }
+.awwo-run-slot .canvas-run-timeline-toggle { border-radius: 9px; min-height: 32px; }
+.awwo-run-slot .canvas-run-note { border-radius: 12px; box-shadow: var(--ios-shadow); }
+.awwo-sidebar, :root[data-theme='dark'] .awwo-sidebar, .awwo-bot-sidebar { background: var(--saas-sidebar); }
+.awwo-sidebar { padding: 20px 14px 14px; }
+.awwo-brand { font-size: 23px; gap: 10px; padding-inline: 8px; }
+.awwo-brand-mark { background: linear-gradient(145deg, #2f7df6, #1f66df); border-radius: 12px; box-shadow: 0 3px 10px #2f7df625; }
+.awwo-brand-caption { font-size: 10px; letter-spacing: 1px; font-weight: 500; }
+.awwo-workspace-name { margin: 20px 0; padding: 12px 8px; border-radius: 12px; background: var(--saas-input); border: 1px solid var(--saas-border); }
+.awwo-workspace-avatar { border: 0; border-radius: 9px; color: var(--saas-accent); background: var(--saas-soft); }
+.awwo-nav-active { border-radius: 11px; padding: 11px; }
+.awwo-list-heading { color: var(--saas-muted); font: 10px/1.5 var(--ios-mono); letter-spacing: .8px; margin-bottom: 10px; }
+.awwo-search { background: var(--saas-input); border: 1px solid var(--saas-border); border-radius: 11px; color: var(--saas-muted); padding: 9px 11px; }
+.awwo-search input { font-size: 12px; }
+.awwo-new-agent, :root[data-theme='dark'] .awwo-new-agent { min-height: 38px; border-radius: 11px; border-color: var(--saas-border); margin: 14px 0 22px; background: var(--saas-card); }
+.awwo-agent-row { padding: 10px 9px; border-radius: 12px; gap: 9px; margin-block: 3px; }
+.awwo-agent-row:hover, :root[data-theme='dark'] .awwo-agent-row:hover { background: var(--saas-input); }
+.awwo-agent-row.is-selected { border-color: #2f7df64d; background: var(--saas-soft); box-shadow: none; }
+.awwo-agent-row-icon, :root[data-theme='dark'] .awwo-agent-row-icon { width: 34px; height: 34px; border-radius: 10px; background: var(--saas-soft); color: var(--saas-accent); }
+.awwo-agent-row-copy strong { font-size: 12px; font-weight: 600; }
+.awwo-agent-row-copy small { font-size: 10px; margin-top: 4px; }
+.awwo-agent-index { font-family: var(--ios-mono); color: var(--saas-muted); }
+.awwo-status-dot { width: 6px; height: 6px; background: #91a0b4; }
+.awwo-status-dot.is-done { background: var(--ios-green); }
+.awwo-status-dot.is-running { background: var(--agent-running); }
+.awwo-status-dot.is-failed, .awwo-status-dot.is-blocked { background: var(--saas-danger); }
+.awwo-list-empty { color: var(--saas-muted); font-size: 12px; padding: 18px 10px; }
+.awwo-workspace-note, .awwo-sidebar-footer > button, :root[data-theme='dark'] .awwo-workspace-note, :root[data-theme='dark'] .awwo-sidebar-footer > button { color: var(--saas-muted); }
+.awwo-statusbar, :root[data-theme='dark'] .awwo-statusbar { background: var(--saas-card); color: var(--saas-muted); min-height: 30px; font-size: 10px; padding-inline: 18px; }
+.awwo-status-divider { color: var(--saas-border); }
+.awwo-view-tools { border-radius: 13px; padding: 5px; background: var(--saas-card); box-shadow: var(--ios-shadow); }
+.awwo-view-tools button, .awwo-view-tools span, :root[data-theme='dark'] .awwo-view-tools button, :root[data-theme='dark'] .awwo-view-tools span { color: var(--saas-muted); }
+.awwo-view-tools button { border-radius: 8px; }
+.awwo-workspace .canvas-minimap, :root[data-theme='dark'] .awwo-workspace .canvas-minimap { border-radius: 12px; background: var(--ios-surface); }
+.awwo-agent-library { border-radius: 22px; padding: 26px; box-shadow: 0 24px 90px #07152e40; }
+.awwo-library-backdrop { background: #08172b55; backdrop-filter: blur(8px); }
+.awwo-agent-library h2 { font-weight: 700; letter-spacing: -.5px; }
+.awwo-eyebrow { color: var(--saas-muted); font-family: var(--ios-mono); }
+.awwo-library-sources { gap: 6px; }
+.awwo-library-sources button { border-radius: 11px; padding: 9px 13px; }
+.awwo-catalog-list > button { border-radius: 14px; background: var(--saas-input); }
+.awwo-secondary, :root[data-theme='dark'] .awwo-secondary { background: var(--saas-input); color: var(--saas-text); border-radius: 11px; }
+
+/* The left rail is a quiet model roster; details appear only where names collide. */
+.awwo-workspace .model-persona-shelf { background: var(--saas-card); font-size: 12px; }
+.model-persona-shelf-head { min-height: 56px; padding: 12px 16px; }
+.model-persona-shelf h2 { font-size: 14px; letter-spacing: -.2px; font-weight: 650; }
+.model-persona-shelf h3, .model-persona-shelf legend { font-size: 12px; font-weight: 600; }
+.model-persona-shelf h4 { font-size: 11px; font-weight: 600; }
+.model-persona-shelf-toggle { border: 0; border-radius: 9px; width: 32px; height: 32px; background: var(--saas-input); color: var(--saas-muted) !important; }
+.awwo-workspace.has-model-library .awwo-model-sidebar .awwo-workspace-name { display: none; }
+.model-persona-shelf-body { gap: 15px; padding: 12px 12px; }
+.model-persona-shelf-orchestration { padding-bottom: 14px; }
+.awwo-orchestration-choice select { min-height: 38px; border-radius: 10px; padding: 8px 10px; background: var(--saas-input); font-size: 12px; }
+.awwo-orchestration-choice small { font-size: 11px; }
+.model-persona-shelf-hint { line-height: 1.65; font-size: 11px; }
+.model-persona-shelf-group { margin-top: 12px; }
+.model-persona-shelf-group-head { gap: 7px; margin-bottom: 5px; }
+.model-persona-shelf-badge { border-radius: 6px; padding: 2px 5px; background: var(--saas-input); font-size: 9px; }
+.model-persona-shelf-model { min-height: 36px; padding: 8px 29px 8px 10px; border-radius: 9px; background: transparent; border-color: transparent; margin-top: 1px; transition: border-color .15s, background .15s; }
+.model-persona-shelf-model:not(:disabled):hover, .model-persona-shelf-model:not(:disabled):focus-visible { background: var(--saas-soft); border-color: var(--saas-border); }
+.model-persona-shelf-model-title { font-size: 12px; line-height: 1.5; }
+.model-persona-shelf-model-meta { font-family: var(--ios-mono); font-size: 9px; line-height: 1.6; margin-top: 4px; }
+.model-persona-shelf-model-add { display: grid; place-items: center; width: 21px; height: 21px; top: 8px; right: 8px; border-radius: 7px; background: transparent; color: var(--saas-accent); font-size: 16px; }
+.model-persona-shelf-model:disabled { opacity: .62; background: transparent; }
+.model-persona-shelf-persona-grid { gap: 7px; margin-top: 12px; }
+.model-persona-shelf-persona { min-height: 35px; padding: 8px; gap: 7px; border-radius: 10px; background: var(--saas-card); }
+.model-persona-shelf-persona.is-selected { background: var(--saas-soft); border-color: #2f7df680; }
+.model-persona-shelf-workspace { color: var(--saas-accent) !important; padding-top: 15px; }
+
+/* Each rail has its own scroll area so a long catalog never shrinks the stage. */
+.awwo-workspace.has-model-library { position: relative; }
+.awwo-workspace.has-model-library > .awwo-sidebar-scrim { display: none; }
+.awwo-model-sidebar {
+  display: flex;
+  flex: 0 0 252px;
+  flex-direction: column;
+  width: 252px;
+  min-width: 0;
+  min-height: 0;
+  padding: 20px 0 0;
+  border-right: 1px solid var(--saas-border);
+  background: var(--saas-sidebar);
+  z-index: 35;
+}
+.awwo-model-sidebar > .awwo-brand { padding-inline: 22px; flex-shrink: 0; }
+.awwo-model-sidebar > .awwo-workspace-name { margin: 22px 16px 14px; flex-shrink: 0; }
+.awwo-model-sidebar .model-persona-shelf {
+  position: static;
+  flex: 1;
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  min-height: 0;
+}
+.awwo-model-sidebar .model-persona-shelf-head { border-top: 1px solid var(--saas-border); padding-inline: 18px; flex-shrink: 0; }
+.awwo-model-sidebar .model-persona-shelf-body { flex: 1; }
+.awwo-model-sidebar:has(.model-persona-shelf.is-collapsed) { flex-basis: 70px; width: 70px; }
+.awwo-model-sidebar:has(.model-persona-shelf.is-collapsed) > .awwo-brand { padding-inline: 17px; }
+.awwo-model-sidebar:has(.model-persona-shelf.is-collapsed) > .awwo-brand > span:not(.awwo-brand-mark),
+.awwo-model-sidebar:has(.model-persona-shelf.is-collapsed) > .awwo-workspace-name { display: none; }
+.awwo-model-sidebar .model-persona-shelf.is-collapsed { margin-top: 22px; }
+.awwo-sidebar.awwo-bot-sidebar {
+  display: flex;
+  flex: 0 0 280px;
+  width: 280px;
+  min-width: 0;
+  min-height: 0;
+  border-left: 1px solid var(--saas-border);
+  border-right: 0;
+  padding: 0 14px 14px;
+  overflow: hidden;
+}
+/* Collapsed Bot rail: the mirror of the collapsed model sidebar (70px), keeping the add-Bot control. */
+.awwo-sidebar.awwo-bot-sidebar.is-collapsed { flex: 0 0 70px; width: 70px; padding-inline: 8px; }
+.awwo-sidebar.awwo-bot-sidebar.is-collapsed > header { justify-content: center; margin-inline: -8px; padding-inline: 8px; }
+.awwo-sidebar.awwo-bot-sidebar.is-collapsed .awwo-new-agent { width: 44px; margin: 16px auto; padding: 9px 0; }
+.awwo-rail-toggle { flex-shrink: 0; }
+/* A rail named in the empty-canvas hint while it is collapsed: the name itself reveals it. */
+.awwo-rail-link { border: 0; background: none; padding: 0; margin: 0 2px; font: inherit; color: var(--saas-accent); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.awwo-workspace .awwo-rail-link:focus-visible { outline: 2px solid var(--saas-accent); outline-offset: 2px; border-radius: 3px; }
+.awwo-bot-sidebar > header, .awwo-bot-sidebar > .awwo-bot-heading {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  min-height: 50px; flex-shrink: 0; border-bottom: 1px solid var(--saas-border); margin-inline: -14px; padding: 8px 12px 8px 18px;
+}
+.awwo-bot-sidebar h2 { margin: 0; color: var(--saas-text); font-size: 14px; letter-spacing: -.2px; font-weight: 650; }
+.awwo-bot-header h2 { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.awwo-bot-header-actions { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.awwo-bot-header-actions .awwo-icon-button { width: 30px; height: 30px; }
+.awwo-bot-header-actions .awwo-bot-add { color: var(--saas-accent); background: var(--saas-soft); }
+.awwo-bot-header-actions .awwo-bot-add:hover { background: var(--saas-input); }
+.awwo-bot-sidebar h3 { margin: 0; color: var(--saas-text); font-size: 12px; font-weight: 600; }
+.awwo-bot-sidebar .awwo-new-agent { flex-shrink: 0; margin: 16px 0; }
+.awwo-bot-tools { flex-shrink: 0; max-height: min(45vh, 300px); overflow-y: auto; overscroll-behavior: contain; padding: 12px 0; border-bottom: 1px solid var(--saas-border); }
+.awwo-bot-tools .awwo-search { margin: 10px 0 0; border: 1px solid var(--saas-border); background: var(--saas-input); }
+.awwo-bot-tools .awwo-bot-personas { margin-top: 10px; padding-top: 8px; }
+.awwo-bot-tabs { display: flex; flex-shrink: 0; gap: 4px; padding: 4px; background: var(--saas-input); border: 1px solid var(--saas-border); border-radius: 11px; }
+.awwo-bot-tabs button { display: flex; flex: 1; align-items: center; justify-content: center; gap: 4px; min-width: 0; min-height: 31px; padding: 7px 5px; border: 0; border-radius: 8px; background: transparent; color: var(--saas-muted); font-size: 11px; }
+.awwo-bot-tabs button[aria-pressed='true'] { color: var(--saas-accent); background: var(--saas-card); box-shadow: 0 2px 6px #1832550c; }
+.awwo-bot-tabs button > span { font: 9px var(--ios-mono); }
+.awwo-bot-sidebar .awwo-search, .awwo-bot-sidebar > .awwo-list-heading { flex-shrink: 0; }
+.awwo-bot-sidebar .awwo-agent-list { flex: 1; min-height: 76px; overscroll-behavior: contain; scrollbar-width: thin; }
+.awwo-bot-sidebar .awwo-agent-row { min-height: 54px; border-radius: 11px; }
+.awwo-bot-sidebar .awwo-agent-row-icon { color: var(--saas-accent); background: var(--saas-soft); }
+.awwo-bot-sidebar .awwo-agent-row:hover { background: var(--saas-input); }
+.awwo-bot-sidebar .awwo-agent-row.is-selected { background: var(--saas-soft); border-color: transparent; box-shadow: none; }
+.awwo-bot-sidebar .awwo-agent-row-copy strong { font-size: 12px; }
+.awwo-bot-sidebar .awwo-agent-row-copy small { color: var(--saas-muted); font-size: 10px; }
+.awwo-bot-sidebar .awwo-sidebar-footer { flex-shrink: 0; margin-top: 0; padding-top: 8px; }
+.awwo-bot-content { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
+.awwo-bot-sidebar .awwo-bot-content { padding-top: 10px; }
+.awwo-bot-content .awwo-library-sources { margin-top: 12px; margin-bottom: 12px; display: flex; flex-wrap: nowrap; gap: 4px; padding: 4px; background: var(--saas-input); border: 1px solid var(--saas-border); border-radius: 11px; }
+.awwo-bot-content .awwo-library-sources button { flex: 1; min-width: 0; border: 0; border-radius: 8px; padding: 8px 5px; font-size: 11px; white-space: normal; }
+.awwo-bot-content .awwo-library-sources button[aria-pressed='true'] { background: var(--saas-card); color: var(--saas-accent); box-shadow: 0 2px 5px #1832550b; }
+.awwo-bot-content .awwo-catalog-tools { gap: 6px; margin: 12px 0; }
+.awwo-bot-content .awwo-catalog-tools .awwo-search { margin-bottom: 0; }
+.awwo-bot-content .awwo-catalog-tools > button { padding: 7px; border-radius: 9px; font-size: 11px; }
+.awwo-bot-content .awwo-catalog-list { grid-template-columns: 1fr; gap: 8px; }
+.awwo-bot-content .awwo-catalog-list > button { padding: 12px; border-radius: 12px; }
+.awwo-bot-content .awwo-catalog-list strong { font-size: 12px; }
+.awwo-bot-content .awwo-catalog-list small { font-size: 11px; -webkit-line-clamp: 2; }
+.awwo-bot-content .awwo-workspace-agent-picker > p { font-size: 11px; margin: 8px 0; }
+.awwo-bot-content .awwo-workspace-agent-picker.is-compact { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+.awwo-bot-content .is-compact > .awwo-catalog-list { flex: 1; min-height: 0; overflow-y: auto; align-content: start; overscroll-behavior: contain; scrollbar-width: thin; }
+.awwo-bot-content .is-compact > .awwo-catalog-tools,
+.awwo-bot-content .is-compact > p,
+.awwo-bot-content .is-compact > .awwo-template-library-footer { flex-shrink: 0; }
+.awwo-bot-content .is-compact > .awwo-catalog-tools { margin-top: 0; }
+.awwo-bot-content .is-compact > .awwo-market-preview { flex: 0 1 190px; min-height: 0; overflow-y: auto; padding: 12px; margin-top: 10px; }
+.awwo-bot-content .is-compact > .awwo-market-preview h3 { font-size: 12px; }
+.awwo-bot-content .awwo-bot-hint { color: var(--saas-muted); margin-top: 0 !important; }
+.awwo-bot-content .awwo-template-library-footer { flex-wrap: wrap; gap: 8px; margin-top: 14px; padding-top: 12px; }
+.awwo-bot-content .awwo-template-library-footer > button { width: 100%; min-height: 36px; padding: 8px 12px; font-size: 12px !important; }
+.awwo-bot-content .awwo-catalog-selection { font-size: 11px; }
+.awwo-bot-personas { --muted: var(--saas-muted); --line: var(--saas-border); --strong: var(--saas-accent); --shelf-selected: var(--saas-soft); flex-shrink: 0; margin-top: 12px; border-top: 1px solid var(--saas-border); padding-top: 12px; font-size: 12px; }
+.awwo-bot-personas > summary { cursor: pointer; font-weight: 600; color: var(--saas-muted); padding: 4px 2px; }
+.awwo-bot-personas .model-persona-shelf-personas { padding-top: 12px; }
+.awwo-bot-personas[open] { max-height: 240px; overflow-y: auto; overscroll-behavior: contain; }
+.awwo-model-menu, .awwo-bot-close { display: none; }
+.awwo-model-sidebar > .awwo-sidebar-footer { padding: 10px 14px 14px; flex-shrink: 0; }
+.awwo-model-sidebar:has(.model-persona-shelf.is-collapsed) > .awwo-sidebar-footer > button { font-size: 0; justify-content: center; padding-inline: 0; }
+.awwo-model-sidebar:has(.model-persona-shelf.is-collapsed) > .awwo-sidebar-footer > button svg:last-child { display: none; }
+
+/* Assistant and empty canvas share the iOS header / input hierarchy. */
+.awwo-canvas-assistant { font-family: var(--ios-font); }
+.awwo-empty.has-assistant { background: radial-gradient(ellipse at 50% 20%, #2f7df606, transparent 65%), var(--saas-bg); }
+.awwo-canvas-assistant--welcome .awwo-assistant-header h1 { font-size: clamp(27px, 3vw, 38px); font-weight: 700; letter-spacing: -1.1px; }
+.awwo-canvas-assistant--welcome .awwo-assistant-header { margin-bottom: 30px; }
+.awwo-assistant-composer { padding: 16px; border-radius: 20px; box-shadow: var(--ios-shadow); }
+.awwo-assistant-composer:focus-within { border-color: var(--ios-blue); box-shadow: 0 0 0 3px #2f7df612, var(--ios-shadow); }
+.awwo-canvas-assistant .awwo-assistant-composer textarea { min-height: 98px; font-size: 14px; line-height: 1.75; }
+.awwo-assistant-composer-actions { margin-top: 14px; }
+.awwo-assistant-send, .awwo-assistant-cancel { min-height: 36px; border-radius: 11px; padding-inline: 13px; }
+.awwo-assistant-examples { gap: 8px; margin-top: 22px; }
+.awwo-assistant-examples button { padding: 8px 12px; border: 1px solid var(--saas-border); border-radius: 11px; background: var(--saas-card); font-size: 12px; }
+.awwo-assistant-examples button:hover:not(:disabled) { text-decoration: none; background: var(--saas-soft); border-color: #2f7df659; }
+.awwo-planner-sidebar { box-shadow: 4px 0 16px #152e5010; }
+.awwo-canvas-assistant--panel .awwo-assistant-header { min-height: 56px; }
+.awwo-canvas-assistant--panel .awwo-assistant-composer { border-radius: 16px; }
+.awwo-empty h2, :root[data-theme='dark'] .awwo-empty h2 { color: var(--saas-text); font-weight: 700; }
+.awwo-empty p, .awwo-empty-note, :root[data-theme='dark'] .awwo-empty p, :root[data-theme='dark'] .awwo-empty-note { color: var(--saas-muted); }
+.awwo-empty-note { font-size: 11px; line-height: 1.7; }
+
+/* Node geometry remains unchanged so saved canvas positions and ports agree. */
+.awwo-workspace .canvas-root .canvas-tile.awwo-node,
+:root[data-theme='dark'] .awwo-workspace .canvas-root .canvas-tile.awwo-node {
+  --awwo-card: var(--saas-card);
+  --awwo-ink: var(--saas-text);
+  --awwo-muted: var(--saas-muted);
+  --awwo-line: var(--saas-border);
+  --awwo-soft: var(--saas-input);
+  --awwo-teal: var(--saas-accent);
+  --awwo-tint: var(--saas-soft);
+  --awwo-error: var(--saas-danger);
+  border-radius: 18px;
+  box-shadow: 0 4px 18px #1832550c, 0 15px 40px #18325509;
+}
+:root[data-theme='dark'] .awwo-workspace .canvas-root .canvas-tile.awwo-node { box-shadow: 0 6px 24px #0003; }
+.awwo-workspace .canvas-root .canvas-tile.awwo-node.canvas-tile--selected,
+.awwo-workspace .canvas-root .canvas-tile.awwo-node.canvas-tile--focus { border-color: var(--ios-blue); box-shadow: 0 0 0 2px #2f7df626, 0 12px 30px #18325516; }
+.awwo-workspace .canvas-root .awwo-node .canvas-tile-head { border-radius: 18px 18px 0 0; }
+.awwo-workspace .canvas-root .awwo-node .canvas-tile-body { border-radius: 0 0 18px 18px; }
+.awwo-workspace .canvas-root .awwo-node .canvas-tile-glyph { border-radius: 8px; }
+.awwo-workspace .canvas-root .awwo-node .canvas-tile-title { font-weight: 600; }
+.awwo-workspace .canvas-root .awwo-node .canvas-tile-bind--bound { border-radius: 6px; }
+.awwo-workspace .canvas-root .awwo-node .canvas-composer-input { border-radius: 13px; }
+.awwo-workspace .canvas-root .awwo-node .canvas-composer-send,
+:root[data-theme='dark'] .awwo-workspace .canvas-root .awwo-node .canvas-composer-send { background: var(--ios-blue); color: #fff; }
+.awwo-workspace .canvas-root .awwo-output-publish button,
+:root[data-theme='dark'] .awwo-workspace .canvas-root .awwo-output-publish button { background: #246ce3; color: #fff; }
+.awwo-workspace .canvas-root .awwo-session-list button.is-active { background: var(--saas-soft); color: var(--saas-accent); }
+.awwo-workspace .canvas-root .awwo-session-sidebar button:hover { background: var(--saas-soft); }
+.awwo-workspace .canvas-root .canvas-inspector { border-radius: 18px; box-shadow: 0 14px 60px #07152e30; }
+.awwo-workspace .canvas-root .canvas-inspector :is(input, select, textarea) { border-radius: 9px; }
+.awwo-workspace .canvas-root .awwo-deliverable { border-radius: 12px; }
+
+@media (max-width: 1280px) {
+  .awwo-workspace.has-model-library .awwo-planner-sidebar { position: absolute; inset: 0 auto 0 0; width: min(340px, 100%); box-shadow: 8px 0 32px #07152e20; }
+  .awwo-workspace.has-model-library .awwo-header { flex-wrap: wrap; gap: 8px; }
+  .awwo-workspace.has-model-library .awwo-header-actions { flex: 1 0 100%; min-width: 0; max-width: 100%; margin-left: 0; }
+  .awwo-workspace.has-model-library .awwo-account-controls { flex: 1; min-width: 0; max-width: 100%; }
+  .awwo-workspace.has-model-library .saas-account-actions { flex: 1; min-width: 0; max-width: 100%; flex-wrap: nowrap; overflow-x: auto; padding-block: 3px; scrollbar-width: thin; }
+  .awwo-workspace.has-model-library .saas-account-actions > :is(button, a, select),
+  .awwo-workspace.has-model-library .saas-preferences { flex-shrink: 0; white-space: nowrap; }
+  .awwo-workspace.has-model-library .saas-preferences > button { white-space: nowrap; }
+}
+@media (max-width: 1100px) {
+  .saas-dashboard { padding-inline: 30px; }
+  .saas-login { gap: 48px; padding-inline: 40px; }
+  .awwo-header { padding-inline: 16px; }
+  .awwo-canvas-bar { padding-inline: 16px; gap: 12px; }
+  .awwo-model-sidebar { flex-basis: 232px; width: 232px; }
+  .awwo-sidebar.awwo-bot-sidebar { flex-basis: 250px; width: 250px; padding-inline: 12px; }
+  .awwo-model-sidebar .model-persona-shelf-body { padding: 16px 12px; }
+  .awwo-bot-sidebar > header, .awwo-bot-sidebar > .awwo-bot-heading { margin-inline: -12px; padding-inline: 16px; }
+}
+@media (max-width: 900px) {
+  .awwo-workspace.has-model-library > .awwo-model-sidebar,
+  .awwo-workspace.has-model-library > .awwo-bot-sidebar { display: none; }
+  .awwo-workspace.has-model-library.is-model-library-open > .awwo-model-sidebar,
+  .awwo-workspace.has-model-library.is-sidebar-open > .awwo-bot-sidebar {
+    position: absolute; display: flex; top: 0; bottom: 0; width: min(310px, calc(100% - 40px)); z-index: 90;
+    box-shadow: 0 10px 50px #07152e40;
+  }
+  .awwo-workspace.has-model-library.is-model-library-open > .awwo-model-sidebar { left: 0; right: auto; }
+  .awwo-workspace.has-model-library.is-sidebar-open > .awwo-bot-sidebar { right: 0; left: auto; }
+  .awwo-workspace.has-model-library > .awwo-sidebar-scrim { display: block; position: absolute; inset: 0; z-index: 85; background: #07152e50; backdrop-filter: blur(3px); border: 0; }
+  .awwo-workspace.has-model-library .awwo-model-menu,
+  .awwo-workspace.has-model-library .awwo-mobile-menu,
+  .awwo-workspace.has-model-library .awwo-bot-close { display: inline-flex; }
+  /* Mobile rails are drawers with their own close control; the desktop collapse toggles are not one. */
+  .awwo-workspace.has-model-library .awwo-rail-toggle,
+  .awwo-workspace.has-model-library .model-persona-shelf-toggle { display: none; }
+  .awwo-model-sidebar:has(.model-persona-shelf.is-collapsed) { flex-basis: 70px; width: 70px; }
+}
+@media (max-width: 760px) {
+  .saas-login { grid-template-columns: 1fr; padding: 76px 22px 30px; gap: 28px; }
+  .saas-login-brand h1 { font-size: 31px; margin: 18px 0 10px; }
+  .saas-login-brand p { font-size: 13px; }
+  .saas-card { padding: 25px; border-radius: 20px; }
+  .saas-dashboard { padding: 0 20px 40px; }
+  .saas-dashboard > header { min-height: 78px; padding-block: 16px; gap: 14px; }
+  .saas-page-intro { margin: 36px 0 24px; }
+  .saas-page-intro h1 { font-size: 30px; }
+  .saas-create { flex-wrap: wrap; gap: 10px; }
+  .saas-create input { flex: 1 1 190px; min-width: 0; width: auto; }
+  .saas-canvas-list { grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr)); gap: 16px; }
+  .saas-canvas-list article.saas-canvas-card { min-height: 210px; }
+  .saas-cloud-status { padding-inline: 10px; }
+  .awwo-workspace .awwo-header { min-height: 54px; padding: 8px 12px; }
+  .awwo-workspace .awwo-canvas-bar { padding-inline: 12px; }
+  .awwo-empty.has-assistant { padding: 22px 16px; }
+  .awwo-canvas-assistant--welcome .awwo-assistant-header h1 { font-size: 28px; }
+  .awwo-canvas-assistant--welcome .awwo-assistant-header { margin-bottom: 24px; }
+  .awwo-assistant-composer { padding: 13px; border-radius: 18px; }
+  .awwo-assistant-examples { gap: 7px; }
+  .awwo-assistant-examples button { font-size: 11px; }
+  .awwo-statusbar { gap: 10px; padding-inline: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .saas-login *, .saas-dashboard *, .saas-canvas-shell * { scroll-behavior: auto; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+/* The same canonical Fold mark is used by the hosted app and the native Mac icon. */
+.saas-logo::before,
+.saas-login-brand > span::before {
+  content: '';
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 0;
+  background: url('../awwo-mark.svg') center / contain no-repeat;
+  transform: none;
+}
+.saas-login-brand > span { display: inline-flex; align-items: center; gap: 9px; }
+.awwo-brand-mark {
+  border: 0;
+  border-radius: 0;
+  background: url('../awwo-mark.svg') center / contain no-repeat;
+  box-shadow: none;
+}
+.awwo-brand-mark > svg { visibility: hidden; }

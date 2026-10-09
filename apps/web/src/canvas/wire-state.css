@@ -1,0 +1,70 @@
+/* Only real receiving executions get motion. The shared canvas palette remains the source. */
+.canvas-root .canvas-wires .canvas-wire-link {
+  --wire-state-color: var(--edge);
+  outline: none;
+}
+.canvas-root .canvas-wires .canvas-wire-link--feedback {
+  --wire-state-color: var(--muted);
+}
+.canvas-root .canvas-wires .canvas-wire-link--waiting {
+  --wire-state-color: var(--warn);
+}
+.canvas-root .canvas-wires .canvas-wire-link--flowing {
+  --wire-state-color: var(--teal);
+}
+.canvas-root .canvas-wires .canvas-wire-link--delivered {
+  --wire-state-color: var(--ok);
+}
+.canvas-root .canvas-wires .canvas-wire-link--failed,
+.canvas-root .canvas-wires .canvas-wire-link--blocked {
+  --wire-state-color: var(--err);
+}
+.canvas-root .canvas-wires .canvas-wire-link--cancelled {
+  --wire-state-color: var(--faint);
+}
+.canvas-root .canvas-wires .canvas-wire-link .canvas-wire {
+  stroke: var(--wire-state-color);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.canvas-root .canvas-wires .canvas-wire-link--feedback .canvas-wire {
+  stroke-dasharray: 7 5;
+}
+.canvas-root .canvas-wires .canvas-wire-link--blocked .canvas-wire,
+.canvas-root .canvas-wires .canvas-wire-link--cancelled .canvas-wire {
+  stroke-opacity: 0.48;
+}
+.canvas-root .canvas-wires .canvas-wire-arrow {
+  fill: var(--wire-state-color);
+  stroke: none;
+}
+.canvas-root .canvas-wires .canvas-wire-selection {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 8;
+  pointer-events: none;
+}
+.canvas-root .canvas-wires .canvas-wire-link--selected .canvas-wire-selection,
+.canvas-root .canvas-wires .canvas-wire-link:focus-visible .canvas-wire-selection {
+  stroke: color-mix(in srgb, var(--blue) 25%, transparent);
+}
+.canvas-root .canvas-wires .canvas-wire-flow {
+  fill: none;
+  stroke: var(--strong);
+  stroke-width: 2.5;
+  stroke-dasharray: 4 20;
+  stroke-linecap: round;
+  pointer-events: none;
+  animation: canvas-wire-forward 1s linear infinite;
+}
+.canvas-root .canvas-wires .canvas-wire-hit {
+  stroke-width: 16;
+}
+@keyframes canvas-wire-forward {
+  to { stroke-dashoffset: -24; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .canvas-root .canvas-wires .canvas-wire-flow {
+    animation: none;
+  }
+}
