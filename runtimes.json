@@ -1,0 +1,7 @@
+{
+  "defaultRuntime": "mock",
+  "runtimes": [
+    { "id": "mock", "label": "Mock (offline demo)", "url": "http://127.0.0.1:8791" },
+    { "id": "openai", "label": "OpenAI-compatible", "url": "http://127.0.0.1:8792", "tokenEnv": "AWWO_OPENAI_WORKER_TOKEN" }
+  ]
+}

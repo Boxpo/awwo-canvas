@@ -1,0 +1,199 @@
+/* The open-source shell around AwwO's canvas styles. Every colour comes from the theme variables the
+   reused stylesheets define (canvas.css, remapped by ios-theme.css for light and dark), so this file
+   carries layout and spacing only. */
+
+html, body, #root { height: 100%; margin: 0; }
+body { overflow: hidden; }
+
+.awwo-workspace { position: fixed; inset: 0; background: var(--saas-bg); color: var(--saas-text); }
+.awwo-app { position: absolute; inset: 0; }
+.awwo-app :is(button, input, select, textarea) { font: inherit; }
+.awwo-app :is(button, a, select, input, textarea, summary):focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* ---- top bar --------------------------------------------------------------------------------- */
+.awwo-topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 56px; z-index: 50; box-sizing: border-box;
+  display: flex; align-items: center; gap: 10px; padding: 0 16px;
+  background: var(--panel); border-bottom: 1px solid var(--line); backdrop-filter: blur(16px);
+}
+.awwo-brand { display: flex; align-items: center; gap: 8px; margin-right: 6px; white-space: nowrap; }
+.awwo-brand strong { font-size: 15px; letter-spacing: -0.2px; }
+.awwo-brand span {
+  font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px;
+}
+.awwo-topbar-spacer, .awwo-spacer { flex: 1; }
+.awwo-chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 11px; box-sizing: border-box;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--text);
+  font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
+}
+span.awwo-chip { min-height: 22px; padding: 0 8px; font-weight: 500; cursor: default; }
+.awwo-chip:hover:not(span) { border-color: color-mix(in srgb, var(--blue) 45%, var(--line)); }
+.awwo-chip.is-active, .awwo-chip.is-accent { background: color-mix(in srgb, var(--blue) 12%, var(--card)); color: var(--blue); border-color: color-mix(in srgb, var(--blue) 40%, var(--line)); }
+.awwo-runtime-chip.is-ready svg { color: var(--ok); }
+.awwo-runtime-chip.is-down { color: var(--warn); }
+
+.awwo-menu { position: relative; }
+.awwo-menu-list {
+  position: absolute; top: 38px; left: 0; z-index: 60; min-width: 250px; padding: 6px;
+  display: flex; flex-direction: column; gap: 2px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 18px 44px var(--shadow);
+}
+.awwo-menu-list button {
+  text-align: left; padding: 8px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer;
+}
+.awwo-menu-list button:hover:not(:disabled) { background: color-mix(in srgb, var(--blue) 10%, transparent); }
+.awwo-menu-list button:disabled { opacity: 0.45; cursor: not-allowed; }
+.awwo-menu-list hr { width: 100%; border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
+.awwo-menu-list .is-danger, .awwo-ghost.is-danger { color: var(--err); }
+.awwo-menu-glyph {
+  display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; flex: none;
+  background: color-mix(in srgb, var(--blue) 12%, transparent); color: var(--blue); font-size: 10px; font-weight: 700;
+}
+
+/* ---- run row --------------------------------------------------------------------------------- */
+.awwo-toolrow {
+  position: fixed; top: 68px; left: 16px; z-index: 30; max-width: calc(100% - 460px);
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.awwo-runbar { display: flex; align-items: center; gap: 8px; }
+.awwo-runbar .canvas-run-btn { display: inline-flex; align-items: center; gap: 6px; }
+.awwo-icon-only, .awwo-icon {
+  display: inline-grid; place-items: center; width: 28px; height: 28px; padding: 0; flex: none;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--muted); cursor: pointer; font-size: 16px;
+}
+.awwo-icon-only:hover, .awwo-icon:hover { color: var(--text); }
+
+.awwo-notice {
+  position: fixed; top: 68px; left: 50%; transform: translateX(-50%); z-index: 70; max-width: min(640px, calc(100% - 32px));
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; font-size: 12px;
+  background: var(--card); color: var(--warn); border: 1px solid color-mix(in srgb, var(--warn) 35%, var(--line)); border-radius: 12px;
+  box-shadow: 0 12px 30px var(--shadow);
+}
+.awwo-empty-hint {
+  position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); margin: 0; pointer-events: none;
+  color: var(--muted); font-size: 14px; text-align: center; max-width: 80%;
+}
+
+/* ---- assistant: welcome overlay on an empty canvas, a dock otherwise -------------------------- */
+.awwo-welcome { position: absolute; inset: 56px 0 0 0; z-index: 20; display: flex; pointer-events: none; overflow-y: auto; }
+.awwo-welcome .awwo-canvas-assistant--welcome { pointer-events: auto; height: auto; width: min(760px, calc(100% - 32px)); margin: auto; }
+.awwo-assistant-dock {
+  position: fixed; top: 56px; right: 0; bottom: 0; width: 400px; z-index: 35;
+  background: var(--panel); border-left: 1px solid var(--line); box-shadow: -18px 0 44px var(--shadow); backdrop-filter: blur(20px);
+}
+.awwo-assistant-dock .awwo-canvas-assistant { height: 100%; }
+.awwo-assistant-settings { margin: 6px 0 0; font-size: 11px; color: var(--muted); }
+.awwo-task-card { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.awwo-task-card .awwo-ghost { align-self: flex-start; }
+.awwo-task-meta { margin: 0; font-size: 11px; color: var(--muted); }
+.awwo-task-error, .awwo-warning { margin: 0; color: var(--err); font-size: 12px; }
+
+/* ---- the inspector sits under the top bar ----------------------------------------------------- */
+.awwo-app .canvas-inspector { top: 56px; width: 360px; }
+.awwo-inspector-chat { display: flex; flex-direction: column; gap: 8px; max-height: 340px; overflow-y: auto; }
+.awwo-chat-turn { padding: 8px 10px; border-radius: 10px; background: var(--soft); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.awwo-chat-turn p { margin: 0; white-space: pre-wrap; }
+.awwo-chat-turn--user { align-self: flex-end; max-width: 88%; background: color-mix(in srgb, var(--blue) 12%, var(--card)); }
+.awwo-chat-turn.is-failed { border: 1px solid color-mix(in srgb, var(--err) 40%, transparent); color: var(--err); }
+.awwo-inspector-composer { margin-top: 4px; }
+.awwo-inspector-row { display: flex; gap: 8px; }
+.awwo-form-field { display: flex; flex-direction: column; gap: 4px; }
+
+/* ---- node cards (canvas.css + awwo-node.css draw the tile itself) ----------------------------- */
+.awwo-app .canvas-tile.awwo-card { gap: 0; }
+.awwo-app .awwo-card .canvas-tile-head { min-height: 44px; padding: 10px 14px 6px; }
+.awwo-app .awwo-card .canvas-tile-glyph { width: 26px; height: 26px; }
+.awwo-app .awwo-card .canvas-tile-title { font-size: 14px; }
+.awwo-app .awwo-card .canvas-tile-actions { min-height: 38px; padding: 6px 14px; }
+.awwo-app .awwo-card .awwo-node-responsibility { margin: 0 14px 6px; font-size: 12px; }
+.awwo-card .canvas-tile-runtime { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.awwo-app .awwo-card .canvas-tile-runtime { padding: 0 14px 6px; }
+/* Port names sit outside the card, where neighbouring columns meet. AwwO's compact card shows them
+   on hover; this edition also shows them on a selected node and while a wire is being drawn. */
+.canvas-root.awwo-app .awwo-node.is-compact.canvas-tile--selected .canvas-port-field-label,
+.canvas-root.awwo-app.is-wiring .awwo-node.is-compact .canvas-port-field-label { opacity: 1; }
+.awwo-app .canvas-tile:hover, .awwo-app .canvas-tile--selected { z-index: 2; }
+.awwo-card-team { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--blue); }
+.awwo-card-live {
+  margin: 0 14px 8px; font-family: var(--ios-mono); font-size: 11px; line-height: 1.45; color: var(--muted);
+  white-space: pre-wrap; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.awwo-card-output {
+  display: flex; align-items: center; gap: 6px; margin: 0 14px 8px; width: calc(100% - 28px); padding: 4px 8px; box-sizing: border-box;
+  text-align: left; cursor: pointer; border: 1px solid var(--line); border-radius: 8px; background: var(--soft); color: var(--text); font-size: 12px; line-height: 1.4;
+}
+.awwo-card-output span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.awwo-card-output svg { flex: none; margin-top: 2px; color: var(--blue); }
+.awwo-card-output.is-partial { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+.awwo-card-output.is-partial svg { color: var(--warn); }
+
+/* ---- dialogs ---------------------------------------------------------------------------------- */
+.awwo-modal-backdrop {
+  position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 16px;
+  background: color-mix(in srgb, #09152a 45%, transparent); backdrop-filter: blur(6px);
+}
+.awwo-modal {
+  width: min(900px, 100%); max-height: calc(100vh - 32px); display: flex; flex-direction: column; box-sizing: border-box;
+  background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 90px #0004;
+}
+.awwo-modal-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.awwo-modal-head h2 { flex: 1; margin: 0; font-size: 16px; }
+.awwo-modal-body { padding: 14px 18px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+.awwo-muted { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.awwo-ghost {
+  display: inline-flex; align-items: center; gap: 5px; min-height: 28px; padding: 0 10px;
+  border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--text); font-size: 12px; cursor: pointer;
+}
+.awwo-ghost:hover:not(:disabled) { background: var(--soft); }
+.awwo-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
+.awwo-workspace .awwo-primary { min-height: 32px; padding: 0 14px; border: 1px solid; cursor: pointer; }
+.awwo-workspace .awwo-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.awwo-output-field { display: flex; flex-direction: column; gap: 8px; }
+.awwo-output-field > header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.awwo-output-field code, .awwo-runtime-head code { font-family: var(--ios-mono); font-size: 11px; color: var(--muted); }
+.awwo-markdown-body { font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.awwo-html-preview { width: 100%; height: 60vh; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.awwo-raw {
+  margin: 0; padding: 10px 12px; max-height: 50vh; overflow: auto; border-radius: 10px; background: var(--soft);
+  font-family: var(--ios-mono); font-size: 12px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.awwo-raw-details summary { cursor: pointer; font-size: 12px; font-weight: 600; color: var(--muted); }
+.awwo-raw-details[open] summary { margin-bottom: 8px; }
+.awwo-turns { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+.awwo-turns p { margin: 0 0 4px; }
+.awwo-turns .is-failed { color: var(--err); }
+
+/* ---- hot-plug runtimes ----------------------------------------------------------------------- */
+.awwo-runtimes { width: min(760px, 100%); }
+.awwo-runtime-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.awwo-runtime { padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
+.awwo-runtime-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.awwo-status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex: none; }
+.awwo-runtime.is-ready .awwo-status-dot { background: var(--ok); }
+.awwo-runtime.is-unavailable .awwo-status-dot { background: var(--err); }
+.awwo-runtime.is-probing .awwo-status-dot { background: var(--warn); }
+.awwo-runtime-facts { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; font-size: 12px; }
+.awwo-runtime-facts dt { color: var(--muted); }
+.awwo-runtime-facts dd { margin: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.awwo-runtime-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; align-items: end; }
+.awwo-runtime-form h3 { grid-column: 1 / -1; margin: 6px 0 0; font-size: 13px; }
+.awwo-runtime-form label { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--muted); }
+.awwo-runtime-form input, .awwo-inline-form input {
+  min-height: 32px; padding: 0 10px; box-sizing: border-box; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--soft); color: var(--text); font-size: 12px;
+}
+.awwo-inline-form { display: flex; gap: 8px; margin-top: 6px; }
+.awwo-inline-form input { flex: 1; }
+
+@media (max-width: 760px) {
+  .awwo-brand span { display: none; }
+  .awwo-assistant-dock { width: 100%; }
+  .awwo-toolrow { max-width: calc(100% - 32px); }
+  .awwo-runtime-form { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .awwo-app *, .awwo-app *::before, .awwo-app *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@awwo/worker-mock",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dependency-free reference worker for AwwO Canvas (protocol v1). Calls no model.",
+  "license": "MIT",
+  "type": "module",
+  "bin": { "awwo-worker-mock": "./worker.mjs" },
+  "scripts": {
+    "start": "node worker.mjs",
+    "test": "node --test worker.test.mjs"
+  }
+}

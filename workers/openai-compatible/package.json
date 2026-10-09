@@ -1,0 +1,13 @@
+{
+  "name": "@awwo/worker-openai-compatible",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AwwO Canvas worker (protocol v1) for any OpenAI-compatible Chat Completions API. Dependency-free.",
+  "license": "MIT",
+  "type": "module",
+  "bin": { "awwo-worker-openai": "./worker.mjs" },
+  "scripts": {
+    "start": "node worker.mjs",
+    "test": "node --test worker.test.mjs"
+  }
+}

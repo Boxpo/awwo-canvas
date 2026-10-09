@@ -1,0 +1,113 @@
+.awwo-canvas-assistant {
+  color: var(--awwo-ink, #232c29);
+  font: 14px/1.6 'Segoe UI Variable', 'Microsoft YaHei UI', system-ui, sans-serif;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  --assistant-on-accent: #fff;
+}
+.awwo-canvas-assistant *, .awwo-canvas-assistant *::before, .awwo-canvas-assistant *::after { box-sizing: border-box; }
+.awwo-canvas-assistant button, .awwo-canvas-assistant textarea { font: inherit; }
+.awwo-canvas-assistant button { cursor: pointer; }
+.awwo-canvas-assistant button:disabled { cursor: not-allowed; opacity: .45; }
+.awwo-canvas-assistant button:focus-visible, .awwo-canvas-assistant textarea:focus-visible { outline: 2px solid var(--awwo-accent, #286454); outline-offset: 3px; }
+.awwo-canvas-assistant svg { flex: 0 0 auto; }
+.awwo-canvas-assistant--welcome { width: 100%; height: 100%; align-items: center; justify-content: flex-start; padding: 32px 24px; overflow-y: auto; }
+/* Auto margins center short content but collapse for a tall recovery/history view, keeping its top reachable. */
+.awwo-canvas-assistant--welcome > :first-child { margin-top: auto; }
+.awwo-canvas-assistant--welcome > :last-child { margin-bottom: auto; }
+.awwo-assistant-header { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; }
+.awwo-canvas-assistant .awwo-assistant-header :is(h1,h2) { width: auto; max-width: none; margin: 0; color: inherit; line-height: 1.4; }
+.awwo-canvas-assistant--welcome .awwo-assistant-header { margin-bottom: 25px; text-align: center; }
+.awwo-canvas-assistant--welcome .awwo-assistant-header h1 { font-size: clamp(25px, 3vw, 36px); font-weight: 550; letter-spacing: -.8px; }
+.awwo-assistant-composer-block { width: 100%; min-width: 0; flex: 0 0 auto; }
+.awwo-canvas-assistant--welcome .awwo-assistant-composer-block { max-width: 640px; }
+.awwo-assistant-runtime { margin-bottom: 10px; text-align: left; color: var(--awwo-muted, #68736d); font-size: 12px; }
+.awwo-assistant-composer { width: 100%; margin: 0; padding: 13px; border: 1px solid var(--awwo-border, #e4e8e2); border-radius: 15px; background: var(--awwo-surface, #fff); box-shadow: 0 4px 20px #1b392706; }
+.awwo-assistant-composer:focus-within { border-color: var(--awwo-accent, #286454); box-shadow: 0 0 0 2px #2864540a; }
+.awwo-canvas-assistant .awwo-assistant-composer textarea { display: block; width: 100%; min-height: 86px; max-height: 200px; resize: vertical; padding: 4px 3px; color: var(--awwo-ink, #232c29); font-size: 14px; line-height: 1.65; border: 0; border-radius: 0; outline: none; box-shadow: none; background: transparent; }
+.awwo-assistant-composer textarea::placeholder { color: var(--awwo-muted, #68736d); opacity: .85; }
+.awwo-assistant-composer textarea:disabled { opacity: .65; }
+.awwo-assistant-composer-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 9px; }
+.awwo-assistant-send, .awwo-assistant-cancel { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 37px; border: 0; border-radius: 8px; padding: 7px 12px; font-size: 12px !important; }
+.awwo-assistant-send { background: var(--awwo-accent, #286454); color: var(--assistant-on-accent); }
+.awwo-assistant-send:hover:not(:disabled) { filter: brightness(.95); }
+.awwo-assistant-cancel { color: var(--awwo-ink, #232c29); background: var(--awwo-accent-soft, #edf4ee); }
+/* One live status, read like a terminal task line: what is happening now, then the measured
+   facts, then the four observed steps. Nothing here is a percentage. */
+.awwo-assistant-status { margin-top: 6px; padding: 9px 11px 8px; border-radius: 10px; background: color-mix(in srgb, var(--awwo-accent-soft, #edf4ee) 55%, transparent); font-size: 12px; line-height: 1.5; min-width: 0; }
+.awwo-canvas-assistant .awwo-assistant-status p { margin: 0; max-width: none; }
+.awwo-assistant-status-headline { display: flex; align-items: center; gap: 7px; min-width: 0; color: var(--awwo-ink, #232c29); font-weight: 550; }
+.awwo-assistant-status-headline span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.awwo-assistant-status-headline svg { color: var(--awwo-accent, #286454); animation: awwo-assistant-spin 1s linear infinite; }
+/* The facts stay secondary to the headline, in fixed-width digits so the line never jitters. */
+.awwo-canvas-assistant .awwo-assistant-status-meta { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 6px; margin-top: 2px; padding-left: 21px; color: var(--awwo-muted, #68736d); font-variant-numeric: tabular-nums; }
+.awwo-assistant-status-dot { flex: 0 0 auto; align-self: center; width: 6px; height: 6px; border-radius: 50%; background: var(--awwo-accent, #286454); animation: awwo-assistant-pulse 1.4s ease-in-out infinite; }
+.awwo-assistant-status-hint::before { content: '· '; }
+.awwo-assistant-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; margin-top: 8px; padding-left: 21px; }
+.awwo-assistant-step { display: flex; flex-direction: column; gap: 3px; min-width: 0; color: var(--awwo-muted, #68736d); font-size: 10.5px; line-height: 1.3; opacity: .55; }
+.awwo-assistant-step > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.awwo-assistant-step i { position: relative; display: block; height: 3px; overflow: hidden; border-radius: 2px; background: var(--awwo-border, #e4e8e2); }
+.awwo-assistant-step.is-done, .awwo-assistant-step.is-active { opacity: 1; }
+.awwo-assistant-step.is-done i { background: var(--awwo-accent, #286454); }
+.awwo-assistant-step.is-active { color: var(--awwo-ink, #232c29); }
+/* The current step moves while it lasts: alive, without claiming how far it has got. */
+.awwo-assistant-step.is-active i::after { content: ''; position: absolute; inset: 0 auto 0 0; width: 40%; border-radius: inherit; background: var(--awwo-accent, #286454); animation: awwo-assistant-sweep 1.6s ease-in-out infinite; }
+.awwo-assistant-examples { display: flex; flex-direction: column; align-items: flex-start; width: 100%; max-width: 640px; gap: 3px; margin-top: 20px; }
+.awwo-assistant-examples button { max-width: 100%; padding: 4px 1px; text-align: left; border: 0; border-radius: 3px; color: var(--awwo-muted, #68736d); background: transparent; font-size: 12px; line-height: 1.65; }
+.awwo-assistant-examples button:hover:not(:disabled) { color: var(--awwo-accent, #286454); text-decoration: underline; text-underline-offset: 3px; }
+.awwo-canvas-assistant--panel { width: 100%; height: 100%; overflow: hidden; background: var(--awwo-surface, #fff); }
+.awwo-canvas-assistant--panel .awwo-assistant-header { min-height: 60px; padding: 14px 18px; border-bottom: 1px solid var(--awwo-border, #e4e8e2); }
+.awwo-canvas-assistant--panel .awwo-assistant-header h2 { font-size: 15px; font-weight: 600; letter-spacing: 0; }
+.awwo-assistant-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--awwo-muted, #68736d); }
+.awwo-assistant-icon-button:hover { background: var(--awwo-accent-soft, #edf4ee); }
+.awwo-assistant-messages { width: 100%; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: 20px 18px; }
+.awwo-canvas-assistant--panel .awwo-assistant-messages { flex: 1; }
+.awwo-canvas-assistant--welcome .awwo-assistant-messages { max-width: 640px; max-height: 30vh; padding: 0 0 18px; }
+.awwo-assistant-messages ol { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 18px; }
+.awwo-assistant-message { min-width: 0; color: var(--awwo-ink, #232c29); font-size: 13px; }
+.awwo-assistant-message p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.awwo-assistant-message--user { align-self: flex-end; max-width: 95%; padding: 10px 12px; border-radius: 12px 12px 3px 12px; background: var(--awwo-accent-soft, #edf4ee); }
+.awwo-assistant-message--assistant { padding: 0 1px; }
+.awwo-assistant-message-status { display: block; color: var(--awwo-accent, #286454); margin-top: 8px; font-size: 11px; }
+.awwo-assistant-message-status.is-stale { color: #856d31; }
+.awwo-assistant-empty { margin: 4px 0 0; color: var(--awwo-muted, #68736d); font-size: 13px; }
+.awwo-assistant-error, .awwo-assistant-message p[role='alert'] { color: #a33f35; }
+.awwo-assistant-error { margin: 0 0 10px; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+.awwo-assistant-recovery { margin-bottom: 12px; padding: 12px; border: 1px solid var(--awwo-border, #e4e8e2); border-radius: 12px; background: var(--awwo-accent-soft, #edf4ee); font-size: 12px; text-align: left; }
+.awwo-canvas-assistant .awwo-assistant-recovery p { margin: 0 0 6px; overflow-wrap: anywhere; }
+.awwo-assistant-recovery-prompt { max-height: 100px; overflow-y: auto; white-space: pre-wrap; font-weight: 550; }
+.awwo-assistant-recovery .awwo-assistant-composer-actions { flex-wrap: wrap; }
+.awwo-canvas-assistant--panel .awwo-assistant-composer-block { padding: 0 16px 16px; }
+.awwo-canvas-assistant--panel .awwo-assistant-composer { padding: 10px; border-radius: 12px; box-shadow: none; }
+.awwo-canvas-assistant--panel .awwo-assistant-composer textarea { font-size: 13px; max-height: 160px; }
+/* Where the host also does tasks, the server routes each message: each reply says how it was handled, and the
+ * latest request can be handed over to the other way. Nothing is chosen beforehand. */
+.awwo-assistant-route { display: block; margin-bottom: 5px; color: var(--awwo-muted, #68736d); font-size: 11px; font-weight: 600; line-height: 1.4; }
+.awwo-assistant-switch { align-self: flex-start; margin-top: -10px; }
+.awwo-assistant-switch > button { padding: 3px 1px; border: 0; border-radius: 3px; background: transparent; color: var(--awwo-accent, #286454); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+.awwo-assistant-switch > button:disabled { opacity: .55; }
+.awwo-assistant-readonly { margin: 0; color: var(--awwo-muted, #68736d); font-size: 12px; line-height: 1.55; }
+.awwo-assistant-message.is-pending { opacity: .62; }
+.awwo-assistant-route-notice { margin: 0 0 10px; color: var(--awwo-muted, #68736d); font-size: 12px; line-height: 1.55; }
+/* A standing notice under the composer: no personal or sensitive data; AI output can be wrong. */
+.awwo-composer-disclaimer { display: block; margin-top: 6px; color: var(--awwo-muted, #68736d); font-size: 11px; line-height: 1.45; }
+.awwo-assistant-undo { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 4px 1px; border: 0; border-radius: 3px; color: var(--awwo-muted, #68736d); background: transparent; font-size: 11px !important; }
+.awwo-assistant-undo:hover:not(:disabled) { color: var(--awwo-accent, #286454); }
+:root[data-theme='dark'] .awwo-canvas-assistant { --assistant-on-accent: #142a20; }
+:root[data-theme='dark'] .awwo-assistant-error, :root[data-theme='dark'] .awwo-assistant-message p[role='alert'] { color: #f1a6a1; }
+:root[data-theme='dark'] .awwo-assistant-message-status.is-stale { color: #dbba73; }
+@keyframes awwo-assistant-spin { to { transform: rotate(360deg); } }
+@keyframes awwo-assistant-pulse { 0%, 100% { opacity: .35; transform: scale(.8); } 50% { opacity: 1; transform: scale(1); } }
+@keyframes awwo-assistant-sweep { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+@media (max-width: 600px) {
+  .awwo-canvas-assistant--welcome { padding: 24px 18px; }
+  .awwo-canvas-assistant--welcome .awwo-assistant-header { margin-bottom: 20px; }
+  .awwo-assistant-examples { margin-top: 16px; }
+  .awwo-canvas-assistant--panel .awwo-assistant-header { min-height: 56px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .awwo-assistant-status-headline svg, .awwo-assistant-status-dot, .awwo-assistant-step.is-active i::after { animation: none; }
+  .awwo-assistant-step.is-active i::after { width: 100%; opacity: .45; }
+}
